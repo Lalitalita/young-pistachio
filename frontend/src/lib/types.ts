@@ -17,7 +17,8 @@ export interface ScreenSettings {
 export interface PublicState {
   server_time: number; mode: "free" | "guided"; phases: PhaseInfo[]; guided_open: string[];
   screen: ScreenSettings; attract: boolean;
-  counts: { day_total: number; connected: number; by_phase: Record<string, number> };
+  counts: { day_total: number; connected: number; by_phase: Record<string, number>; opt_in: number };
+  content_v: number;
   branding: Branding;
   qr: { url: string; alt_url: string; ssid: string; wifi: boolean };
   demo: { enabled: boolean; count: number };

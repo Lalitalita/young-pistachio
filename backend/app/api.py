@@ -32,6 +32,12 @@ async def state():
     return get_hub().public_state()
 
 
+@router.get("/content")
+async def get_content():
+    """Textes (curieux/expert) et glossaire, fusionnés avec les surcharges de l'admin."""
+    return {"v": content.version(), "texts": content.get_texts(), "glossary": content.get_glossary()}
+
+
 @router.post("/session")
 async def create_session(request: Request, response: Response):
     """Idempotent : renvoie la session existante (cookie valide) ou en crée une."""

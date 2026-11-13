@@ -1,0 +1,112 @@
+{
+ "dns": {
+  "label": "DNS",
+  "simple": "L'annuaire d'Internet : il traduit un nom de site (comme coda.school) en adresse que les machines comprennent.",
+  "expert": "Domain Name System. Résolution nom → adresse IP, en général en UDP/53. Chaque requête révèle les sites que ton appareil contacte."
+ },
+ "ip": {
+  "label": "adresse IP",
+  "simple": "Le numéro qui identifie ton appareil sur un réseau, un peu comme une adresse postale.",
+  "expert": "Adresse IPv4/IPv6 attribuée par le DHCP de la box. Ici elle sert à retrouver tes propres requêtes."
+ },
+ "pihole": {
+  "label": "Pi-hole",
+  "simple": "Un filtre installé sur le réseau qui bloque les publicités et les pisteurs avant qu'ils n'atteignent ton téléphone.",
+  "expert": "Serveur DNS « sinkhole » : il répond 0.0.0.0 aux domaines des listes de blocage. API v6 utilisée pour lire les requêtes."
+ },
+ "osint": {
+  "label": "OSINT",
+  "simple": "Retrouver des infos sur quelqu'un uniquement avec ce qu'il a lui-même rendu public, comme ses réseaux sociaux.",
+  "expert": "Open Source Intelligence : renseignement d'origine sources ouvertes. Les attaquants s'en servent pour deviner les mots de passe (prénom, date de naissance, animal…)."
+ },
+ "tracker": {
+  "label": "pisteur",
+  "simple": "Un petit bout de code qui note ce que tu fais en ligne pour te cibler avec de la publicité.",
+  "expert": "Requête vers un domaine d'analytics ou de publicité (pixel, SDK) qui corrèle ton activité entre applications."
+ },
+ "hash": {
+  "label": "hash",
+  "simple": "Une empreinte du mot de passe : les sites ne le gardent pas en clair, mais ce résultat brouillé.",
+  "expert": "Sortie d'une fonction de hachage (bcrypt, SHA-256…). Un hash rapide à calculer se casse beaucoup plus vite qu'un hash volontairement lent."
+ },
+ "brute-force": {
+  "label": "force brute",
+  "simple": "Essayer toutes les combinaisons possibles, l'une après l'autre, jusqu'à trouver la bonne.",
+  "expert": "Énumération exhaustive de l'espace de clés ; en pratique l'attaquant teste d'abord dictionnaires, dates et variantes (« leet »)."
+ },
+ "gpu": {
+  "label": "carte graphique (GPU)",
+  "simple": "Un processeur très puissant pour les jeux vidéo, que les pirates détournent pour tester des milliards de mots de passe par seconde.",
+  "expert": "Les GPU parallélisent le calcul des hashs : plusieurs dizaines de milliards d'essais/s sur des hashs rapides comme MD5 ou NTLM."
+ },
+ "phrase-de-passe": {
+  "label": "phrase de passe",
+  "simple": "Un mot de passe fait de plusieurs mots, facile à retenir et très long, donc très solide.",
+  "expert": "Suite de 4 mots aléatoires ou plus : l'entropie vient de la longueur, pas de la complexité des caractères."
+ },
+ "gestionnaire": {
+  "label": "gestionnaire de mots de passe",
+  "simple": "Un coffre-fort numérique qui retient tous tes mots de passe : tu n'en retiens qu'un seul.",
+  "expert": "Application chiffrée qui génère et stocke un mot de passe unique et aléatoire par service, limitant l'impact d'une fuite."
+ },
+ "2fa": {
+  "label": "double authentification",
+  "simple": "Une deuxième preuve que c'est bien toi (un code sur ton téléphone) en plus du mot de passe.",
+  "expert": "MFA/2FA : second facteur (TOTP, clé FIDO2, SMS). Neutralise la plupart des vols de mots de passe."
+ },
+ "phishing": {
+  "label": "phishing",
+  "simple": "Un faux message qui imite une vraie entreprise pour te pousser à donner tes informations.",
+  "expert": "Hameçonnage : usurpation d'expéditeur, lien trompeur, urgence artificielle. Indices : domaine, en-têtes SPF/DKIM, fautes."
+ },
+ "ping": {
+  "label": "ping",
+  "simple": "Un petit « coucou » envoyé à une machine pour voir si elle répond et en combien de temps.",
+  "expert": "Message ICMP echo request/reply ; mesure la disponibilité et la latence. Repli en connexion TCP si l'ICMP est filtré."
+ },
+ "conteneur": {
+  "label": "conteneur",
+  "simple": "Une petite boîte qui contient une application et tout ce dont elle a besoin pour tourner.",
+  "expert": "Processus isolé (Docker) partageant le noyau de l'hôte ; démarré, arrêté et supervisé indépendamment."
+ },
+ "log": {
+  "label": "log",
+  "simple": "Le journal de bord d'un ordinateur : il note tout ce qui se passe, avec l'heure.",
+  "expert": "Fichier ou flux d'événements horodatés (auth.log, nginx access…). Base du diagnostic et de la détection d'intrusion."
+ },
+ "dns-prive": {
+  "label": "DNS privé",
+  "simple": "Un réglage du téléphone qui envoie ses questions DNS ailleurs, en secret, sans passer par le réseau du Wi-Fi.",
+  "expert": "DNS over TLS/HTTPS (Android « DNS privé », iCloud Private Relay, DoH) : contourne le résolveur local, donc Pi-hole ne voit plus rien."
+ },
+ "cookie": {
+  "label": "cookie",
+  "simple": "Un petit fichier que le site garde dans ton navigateur pour te reconnaître.",
+  "expert": "Valeur stockée côté client et renvoyée à chaque requête ; si elle est modifiable sans signature, elle peut être falsifiée."
+ },
+ "base64": {
+  "label": "base64",
+  "simple": "Une façon d'écrire des données avec des lettres et chiffres. Ce n'est pas un secret : n'importe qui peut le lire.",
+  "expert": "Encodage (pas un chiffrement) réversible : 3 octets → 4 caractères. Très courant dans les défis CTF."
+ },
+ "ctf": {
+  "label": "CTF",
+  "simple": "Un jeu où il faut trouver des mots cachés (« flags ») en explorant un site, comme une chasse au trésor informatique.",
+  "expert": "Capture The Flag : épreuves de sécurité (web, crypto, forensic) validées par la découverte d'un flag."
+ },
+ "leet": {
+  "label": "leet speak",
+  "simple": "Remplacer des lettres par des chiffres ou symboles (a→4, e→3, o→0) en croyant se cacher.",
+  "expert": "Substitutions prévisibles (P@ssw0rd) intégrées aux règles de mutation des outils de cassage : elles n'apportent presque aucune entropie."
+ },
+ "entropie": {
+  "label": "entropie",
+  "simple": "Une mesure du « désordre » d'un mot de passe : plus c'est imprévisible, plus c'est dur à deviner.",
+  "expert": "Logarithme du nombre d'essais nécessaires (en bits). Un motif connu (date, prénom) réduit fortement l'entropie réelle."
+ },
+ "robots": {
+  "label": "robots.txt",
+  "simple": "Un fichier qui dit aux moteurs de recherche quelles pages ne pas visiter, mais qui trahit parfois des pages secrètes.",
+  "expert": "Fichier public à la racine du site ; les chemins « Disallow » sont une cible de reconnaissance classique."
+ }
+}

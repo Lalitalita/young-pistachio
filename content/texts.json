@@ -1,0 +1,44 @@
+{
+ "ui.mode_label": "Niveau d'explication",
+ "ui.mode_curious": "Curieux",
+ "ui.mode_expert": "Expert",
+ "ui.loading": "Chargement…",
+ "ui.back": "← Étape précédente",
+ "ui.restart": "↺ Recommencer",
+ "ui.reroll": "Changer de pseudo",
+ "ui.locked_title": "Une petite pause ⏳",
+ "ui.locked_text": "L'animateur ouvre les étapes au fur et à mesure. Reste connecté : ça repart dans un instant !",
+ "ui.waiting_host": "En attente de l'animateur…",
+ "ui.next": "Continuer",
+ "p0.title": {
+  "curious": "Bienvenue dans le Cyber Parcours !",
+  "expert": "Bienvenue dans le Cyber Parcours"
+ },
+ "p0.intro": {
+  "curious": "En 5 minutes, tu vas défier un pirate, découvrir qui espionne ton téléphone et réparer une panne en direct.",
+  "expert": "En 5 minutes : [[osint|OSINT]] sur un mot de passe, analyse de tes requêtes [[dns|DNS]] et diagnostic d'incident sur une infrastructure supervisée."
+ },
+ "p0.pseudo_label": "Ton nom de code",
+ "p0.pseudo_help": {
+  "curious": "Tiré au sort pour que tu restes anonyme. Touche-le pour en changer.",
+  "expert": "Pseudo aléatoire, aucun identifiant personnel. Session par cookie HttpOnly, effacée en fin de journée."
+ },
+ "p0.privacy_title": "Ta vie privée",
+ "p0.privacy_1": "Aucune donnée personnelle n'est collectée.",
+ "p0.privacy_2": "On ne te demandera jamais ton vrai mot de passe.",
+ "p0.privacy_3": {
+  "curious": "Tout est effacé à la fin de la journée.",
+  "expert": "Base SQLite locale et mémoire du serveur, aucun service externe ; purge totale au reset de fin de journée."
+ },
+ "p0.optin_label": "J'accepte de voir mes propres requêtes réseau",
+ "p0.optin_help": {
+  "curious": "À l'étape 3, tu verras à qui ton téléphone parle en coulisses. Toi seul le verras, et c'est effacé au bout de 15 minutes.",
+  "expert": "[[pihole|Pi-hole]] enregistre les requêtes [[dns|DNS]] de ton adresse [[ip|IP]] ; elles ne s'affichent que sur ton téléphone, restent 15 min en mémoire et n'apparaissent jamais sur le grand écran."
+ },
+ "p0.optin_off": "Tu peux continuer sans : l'étape 3 utilisera alors des données simulées.",
+ "p0.cta": "C'est parti !",
+ "p0.screen_title": "Bienvenue !",
+ "p0.screen_lead": "Scanne le QR code pour rejoindre le parcours.",
+ "p0.screen_recent": "Ils viennent de nous rejoindre",
+ "p0.screen_optin": "ont accepté de voir leurs propres requêtes"
+}

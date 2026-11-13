@@ -171,6 +171,44 @@ async def reset_logo():
     return {"ok": True}
 
 
+@secured.get("/texts")
+async def texts():
+    return {"texts": content.text_rows(), "glossary": content.glossary_rows()}
+
+
+class ValueBody(BaseModel):
+    value: dict | str
+
+
+def _changed():
+    get_hub().request_broadcast(visitors=False)
+    return {"ok": True}
+
+
+@secured.put("/texts/{key}")
+async def put_text(key: str, body: ValueBody):
+    _ok(content.set_text, key, body.value)
+    return _changed()
+
+
+@secured.delete("/texts/{key}")
+async def del_text(key: str):
+    content.reset_text(key)
+    return _changed()
+
+
+@secured.put("/glossary/{key}")
+async def put_term(key: str, body: ValueBody):
+    _ok(content.set_glossary, key, body.value)
+    return _changed()
+
+
+@secured.delete("/glossary/{key}")
+async def del_term(key: str):
+    content.reset_glossary(key)
+    return _changed()
+
+
 @secured.get("/visitors")
 async def visitors():
     return get_hub().visitor_list()

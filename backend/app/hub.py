@@ -176,7 +176,9 @@ class Hub:
                         "enabled": st.enabled[i], "optional": bool(TITLES[i].get("optional")),
                         "params": st.params[i]} for i in st.order],
             "guided_open": st.guided_open, "screen": st.screen, "attract": self.attract(),
-            "counts": {"day_total": self.real_count() + bots, "connected": connected, "by_phase": by_phase},
+            "counts": {"day_total": self.real_count() + bots, "connected": connected, "by_phase": by_phase,
+                       "opt_in": sum(1 for v in self.vis.values() if v["consent"])},
+            "content_v": content.version(),
             "branding": branding, "qr": qr.info(st.screen), "demo": st.demo,
             "recent": [{"pseudo": self.vis[i]["pseudo"]} for i in self.recent
                        if i in self.vis and not self.vis[i]["hidden"]],

@@ -1,14 +1,16 @@
+import { useContent } from "../lib/content";
 import type { MobileProps, ScreenProps } from "./types";
 
 /** Gabarits provisoires : remplacés phase par phase aux étapes suivantes. */
 export function MobilePlaceholder({ info, me, send, step }: MobileProps & { step: number }) {
+  const { t } = useContent();
   return (
     <section className="card phase">
       <h2>{info.title}</h2>
       <p>{info.tagline}</p>
       <p className="dim">Cette étape sera jouable à l'étape {step} du projet.</p>
       <button className="btn big" disabled={me.next_locked} onClick={() => send({ type: "advance" })}>
-        {me.next_locked ? "En attente de l'animateur…" : "Continuer"}
+        {me.next_locked ? t("ui.waiting_host", "En attente de l'animateur…") : t("ui.next", "Continuer")}
       </button>
     </section>
   );

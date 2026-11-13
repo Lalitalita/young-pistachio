@@ -3,7 +3,7 @@
 Atelier interactif pour la journée portes ouvertes de **Coda Avignon** (12 décembre 2026) :
 les visiteurs scannent un QR code, suivent un parcours cyber sur leur téléphone, et un grand écran affiche tout en direct.
 
-> **État : étape 1 (socle).** Sessions et pseudos, temps réel (WebSocket), admin, grand écran avec veille + QR, générateur de QR, bots de démo. Les phases jouables arrivent aux étapes suivantes (les écrans de phase sont pour l'instant des gabarits).
+> **État : étape 2.** Socle (sessions, temps réel, admin, grand écran + veille + QR, bots de démo) + Phase 0 (accueil, opt-in), textes éditables, glossaire en infobulles et bascule Curieux/Expert. Les phases 1 à 4 sont encore des gabarits (étapes suivantes).
 
 Tout se build dans Docker : **aucune installation de Node ou Python sur le PC**.
 
@@ -43,7 +43,10 @@ Ouvre ensuite :
 - **Admin** (`/admin`, mot de passe = `ADMIN_PASSWORD` du `.env`) : progression *libre* ou *guidée* (« Ouvrir l'étape suivante » pour tout le monde), activer/réordonner les phases et régler leurs paramètres, choisir l'affichage du grand écran (rotation auto / phase fixe / veille), visiteurs en direct (renommer, masquer), QR codes à imprimer (Wi-Fi + parcours), contenus et charte (nom de l'école, couleurs, logo, formations, date/lieu, « atelier suivant »), **mode démo** (bots), export CSV anonyme, **reset de fin de journée**.
 - **Grand écran** (`/screen`) : passe tout seul en veille (animation + QR) après inactivité ; compteur de visiteurs ; s'adapte à toute taille de fenêtre.
 - **QR du parcours** : par défaut avec l'**IP** du PC (marche même si le DNS privé du téléphone contourne Pi-hole) ; case dans l'admin pour utiliser `parcours.cyber`.
-- Les contenus par défaut sont dans `content/*.json` ; ce qui est modifié dans l'admin est stocké en base et prend le dessus.
+- **Textes éditables** : `content/texts.json` (textes, souvent en deux versions *curieux* / *expert*), `content/glossary.json` (infobulles), `content/branding.json` (charte, formations, JPO). Onglet **Textes** de l'admin : tout se modifie en direct (visible tout de suite sur les téléphones), avec « Rétablir » par texte. Ce qui est modifié est stocké en base et prend le dessus sur les fichiers.
+- Dans un texte, `[[dns|DNS]]` rend le mot cliquable (définition du glossaire). On peut ajouter ses propres termes dans l'admin.
+- Chaque visiteur choisit **Curieux** (explication simple) ou **Expert** (termes techniques) ; le choix est mémorisé sur son téléphone.
+- **Opt-in** de l'accueil : case « j'accepte de voir mes propres requêtes réseau », comptée de façon anonyme sur l'écran ; sans accord, la phase 2 utilisera des données simulées.
 
 ## Commandes
 

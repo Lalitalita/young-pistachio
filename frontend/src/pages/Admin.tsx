@@ -5,11 +5,12 @@ import Status from "../components/Status";
 import Content from "../admin/Content";
 import Pilotage from "../admin/Pilotage";
 import QrPrint from "../admin/QrPrint";
+import Texts from "../admin/Texts";
 import Tools from "../admin/Tools";
 import Visitors from "../admin/Visitors";
 import type { Meta, Run } from "../admin/shared";
 
-const TABS = [["pilotage", "Pilotage"], ["visiteurs", "Visiteurs"], ["qr", "QR codes"], ["contenu", "Contenu"], ["outils", "Outils"]] as const;
+const TABS = [["pilotage", "Pilotage"], ["visiteurs", "Visiteurs"], ["qr", "QR codes"], ["contenu", "Contenu"], ["textes", "Textes"], ["outils", "Outils"]] as const;
 
 function Login({ onDone }: { onDone: () => void }) {
   const [pw, setPw] = useState("");
@@ -71,6 +72,7 @@ export default function Admin() {
       {tab === "visiteurs" && <Visitors {...props} />}
       {tab === "qr" && <QrPrint {...props} />}
       {tab === "contenu" && <Content {...props} />}
+      {tab === "textes" && <Texts run={run} />}
       {tab === "outils" && <Tools {...props} />}
       {toast && <div className={"toast" + (toast.bad ? " bad" : "")} role="alert">{toast.msg}</div>}
     </main>

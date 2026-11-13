@@ -290,3 +290,64 @@ def test_move_survives_restart(admin, client):
     h = Hub()
     set_hub(h)
     assert h.vis[vid]["phase"] == "p3"
+
+
+def test_public_content_has_texts_and_glossary(client):
+    c = client.get("/api/content").json()
+    assert c["texts"]["p0.cta"] == "C'est parti !"
+    assert set(c["texts"]["p0.intro"]) == {"curious", "expert"}
+    assert c["glossary"]["dns"]["label"] == "DNS"
+    assert client.get("/api/state").json()["content_v"] == c["v"]
+
+
+def test_every_glossary_marker_in_texts_exists(client):
+    import re
+
+    c = client.get("/api/content").json()
+    for k, v in c["texts"].items():
+        for txt in (v.values() if isinstance(v, dict) else [v]):
+            for term in re.findall(r"\[\[([a-z0-9-]+)(?:\|[^\]]+)?\]\]", txt):
+                assert term in c["glossary"], f"{k} cite le terme inconnu {term}"
+
+
+def test_text_override_reset_and_validation(admin, client):
+    v0 = client.get("/api/content").json()["v"]
+    assert admin.put("/api/admin/texts/p0.cta", json={"value": "Allons-y !"}).status_code == 200
+    c = client.get("/api/content").json()
+    assert c["texts"]["p0.cta"] == "Allons-y !" and c["v"] > v0
+    rows = {r["key"]: r for r in admin.get("/api/admin/texts").json()["texts"]}
+    assert rows["p0.cta"]["overridden"] and rows["p0.cta"]["default"] == "C'est parti !"
+    # texte à deux variantes : les deux sont obligatoires
+    assert admin.put("/api/admin/texts/p0.title", json={"value": {"curious": "a"}}).status_code == 422
+    assert admin.put("/api/admin/texts/p0.title", json={"value": "seul"}).status_code == 422
+    assert admin.put("/api/admin/texts/p0.title", json={"value": {"curious": "Salut", "expert": "Salut pro"}}).status_code == 200
+    assert admin.put("/api/admin/texts/inconnu", json={"value": "x"}).status_code == 422
+    assert admin.put("/api/admin/texts/p0.cta", json={"value": ""}).status_code == 422
+    admin.delete("/api/admin/texts/p0.cta")
+    assert client.get("/api/content").json()["texts"]["p0.cta"] == "C'est parti !"
+
+
+def test_glossary_edit_and_custom_term(admin, client):
+    assert admin.put("/api/admin/glossary/dns", json={"value": {"label": "DNS", "simple": "Annuaire.", "expert": ""}}).status_code == 200
+    assert client.get("/api/content").json()["glossary"]["dns"]["simple"] == "Annuaire."
+    assert admin.put("/api/admin/glossary/nouveau-mot", json={"value": {"label": "Nouveau", "simple": "Un mot"}}).status_code == 200
+    assert "nouveau-mot" in client.get("/api/content").json()["glossary"]
+    assert admin.put("/api/admin/glossary/Mauvais Id!", json={"value": {"label": "x", "simple": "y"}}).status_code == 422
+    admin.delete("/api/admin/glossary/nouveau-mot")
+    admin.delete("/api/admin/glossary/dns")
+    g = client.get("/api/content").json()["glossary"]
+    assert "nouveau-mot" not in g and g["dns"]["simple"].startswith("L'annuaire")
+
+
+def test_content_editing_requires_admin(client):
+    assert client.put("/api/admin/texts/p0.cta", json={"value": "x"}).status_code == 401
+    assert client.get("/api/admin/texts").status_code == 401
+
+
+def test_opt_in_counted_and_stored(client):
+    client.post("/api/session")
+    assert client.put("/api/session/consent", json={"consent": True}).json()["consent"] is True
+    import time as t
+    t.sleep(0.2)
+    assert client.get("/api/state").json()["counts"]["opt_in"] == 1
+    assert client.put("/api/session/consent", json={"consent": False}).json()["consent"] is False
