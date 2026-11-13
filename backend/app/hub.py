@@ -108,9 +108,28 @@ class Hub:
             self._move(v, nxt)
 
     def goto(self, vid: str, phase: str) -> None:
+        """Visiteur : peut revenir en arrière ou rester sur place, jamais sauter en avant."""
         v = self.vis.get(vid)
-        if v and phase in self.state.allowed():
+        if not v or phase not in self.state.allowed():
+            return
+        cur, order = v["phase"], self.state.order
+        if cur == "end" or (cur in order and order.index(phase) <= order.index(cur)):
             self._move(v, phase)
+
+    def set_phase(self, vid: str, phase: str) -> bool:
+        """Admin : place un visiteur (ou bot) sur n'importe quelle étape, sans contrainte."""
+        v = self.vis.get(vid)
+        if not v or (phase != "end" and phase not in self.state.order):
+            return False
+        self._move(v, phase)
+        return True
+
+    def set_phase_all(self, phase: str) -> int:
+        if phase != "end" and phase not in self.state.order:
+            return -1
+        for v in self.vis.values():
+            self._move(v, phase)
+        return len(self.vis)
 
     def _move(self, v: dict, phase: str) -> None:
         v["phase"] = phase
@@ -130,7 +149,13 @@ class Hub:
         v, st = self.vis[vid], self.state
         eo = st.enabled_order()
         nxt = st.next_after(v["phase"])
-        return {"pseudo": v["pseudo"], "phase": v["phase"], "allowed": st.allowed(), "next": nxt,
+        order = st.order
+        if v["phase"] == "end":
+            prev = eo[-1] if eo else None
+        else:
+            before = [i for i in order[: order.index(v["phase"])] if st.enabled.get(i)] if v["phase"] in order else []
+            prev = before[-1] if before else None
+        return {"prev": prev, "pseudo": v["pseudo"], "phase": v["phase"], "allowed": st.allowed(), "next": nxt,
                 "next_locked": bool(nxt and nxt != "end" and nxt not in st.allowed()),
                 "index": eo.index(v["phase"]) if v["phase"] in eo else (len(eo) if v["phase"] == "end" else 0),
                 "total": len(eo), "consent": v["consent"]}

@@ -246,3 +246,47 @@ def test_visitor_ws_malformed_messages_ignored(client):
         ws.send_text("x" * 5000)
         ws.send_json({"type": "hb"})
         assert client.get("/api/session").status_code == 200
+
+
+def test_visitor_can_go_back_but_not_skip_forward(admin, client):
+    client.post("/api/session")
+    with client.websocket_connect("/api/ws/visitor", headers=cookie_header(client)) as ws:
+        recv_state(ws)
+        ws.send_json({"type": "goto", "phase": "p3"})  # saut en avant : refusé
+        time.sleep(0.3)
+        assert client.get("/api/session").json()["phase"] == "p0"
+        for _ in range(2):
+            ws.send_json({"type": "advance"})
+            time.sleep(0.2)
+        me = client.get("/api/session").json()
+        assert me["phase"] == "p2" and me["prev"] == "p1"
+        ws.send_json({"type": "goto", "phase": "p0"})  # recommencer
+        time.sleep(0.3)
+        me = client.get("/api/session").json()
+        assert me["phase"] == "p0" and me["prev"] is None
+
+
+def test_admin_moves_visitors_anywhere(admin, client):
+    client.post("/api/session")
+    vid = admin.get("/api/admin/visitors").json()[0]["id"]
+    assert admin.post(f"/api/admin/visitors/{vid}/phase", json={"phase": "end"}).status_code == 200
+    assert client.get("/api/session").json()["phase"] == "end"
+    assert client.get("/api/session").json()["prev"] == "p4"
+    assert admin.post(f"/api/admin/visitors/{vid}/phase", json={"phase": "p2"}).status_code == 200
+    assert client.get("/api/session").json()["phase"] == "p2"
+    assert admin.post(f"/api/admin/visitors/{vid}/phase", json={"phase": "zz"}).status_code == 404
+    assert admin.post("/api/admin/visitors/nope/phase", json={"phase": "p1"}).status_code == 404
+    assert admin.post("/api/admin/visitors/phase-all", json={"phase": "p0"}).json()["count"] == 1
+    assert client.get("/api/session").json()["phase"] == "p0"
+    assert admin.post("/api/admin/visitors/phase-all", json={"phase": "zz"}).status_code == 422
+
+
+def test_move_survives_restart(admin, client):
+    from app.hub import Hub, set_hub
+
+    client.post("/api/session")
+    vid = admin.get("/api/admin/visitors").json()[0]["id"]
+    admin.post(f"/api/admin/visitors/{vid}/phase", json={"phase": "p3"})
+    h = Hub()
+    set_hub(h)
+    assert h.vis[vid]["phase"] == "p3"

@@ -24,7 +24,7 @@ export interface PublicState {
   recent: { pseudo: string }[];
 }
 export interface Me {
-  pseudo: string; phase: string; allowed: string[]; next: string | null; next_locked: boolean;
+  pseudo: string; phase: string; allowed: string[]; next: string | null; prev: string | null; next_locked: boolean;
   index: number; total: number; consent: boolean;
 }
 export interface VisitorRow {

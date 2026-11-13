@@ -54,6 +54,17 @@ export default function Visitor() {
         )}
       </div>
 
+      {accessible && (me.prev || me.phase !== "p0") && (
+        <div className="backrow">
+          {me.prev && me.allowed.includes(me.prev) && (
+            <button className="linkbtn" onClick={() => send({ type: "goto", phase: me.prev })}>← Étape précédente</button>
+          )}
+          {me.phase !== "p0" && (
+            <button className="linkbtn" onClick={() => send({ type: "goto", phase: "p0" })}>↺ Recommencer</button>
+          )}
+        </div>
+      )}
+
       <Status connected={connected} />
     </main>
   );

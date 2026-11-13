@@ -198,6 +198,25 @@ async def rename(vid: str, body: RenameBody):
     return {"ok": True}
 
 
+class PhaseBody(BaseModel):
+    phase: str
+
+
+@secured.post("/visitors/phase-all")
+async def phase_all(body: PhaseBody):
+    n = get_hub().set_phase_all(body.phase)
+    if n < 0:
+        raise HTTPException(422, "Étape inconnue")
+    return {"ok": True, "count": n}
+
+
+@secured.post("/visitors/{vid}/phase")
+async def visitor_phase(vid: str, body: PhaseBody):
+    if not get_hub().set_phase(vid, body.phase):
+        raise HTTPException(404, "Visiteur ou étape inconnu")
+    return {"ok": True}
+
+
 @secured.delete("/leaderboard/{phase}")
 async def clear_leaderboard(phase: str):
     if phase not in BY_ID:
