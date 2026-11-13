@@ -23,6 +23,13 @@ export interface PublicState {
   qr: { url: string; alt_url: string; ssid: string; wifi: boolean };
   demo: { enabled: boolean; count: number };
   recent: { pseudo: string }[];
+  p1: {
+    count: number;
+    strongest: { pseudo: string; score: number; offline_fast: number } | null;
+    best_progress: { pseudo: string; delta: number } | null;
+    top_pitfalls: { code: string; pct: number }[];
+    feed: { pseudo: string; score: number; length: number; offline_fast: number }[];
+  };
 }
 export interface Me {
   pseudo: string; phase: string; allowed: string[]; next: string | null; prev: string | null; next_locked: boolean;

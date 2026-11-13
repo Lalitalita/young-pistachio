@@ -23,3 +23,9 @@ export function parseRich(text: string): Part[] {
   if (last < text.length) parts.push({ type: "text", text: text.slice(last) });
   return parts;
 }
+
+/** Remplace {cle} par vars.cle (texte éditable avec variables, ex. l'objectif en années). */
+export function interpolate(text: string, vars?: Record<string, string | number>): string {
+  if (!vars) return text;
+  return text.replace(/\{(\w+)\}/g, (_, k) => (k in vars ? String(vars[k]) : `{${k}}`));
+}

@@ -59,3 +59,8 @@ def kv_set(key: str, value: Any) -> None:
 
 def kv_delete(key: str) -> None:
     run("DELETE FROM kv WHERE key=?", (key,))
+
+
+def kv_delete_prefix(prefix: str) -> None:
+    run("DELETE FROM kv WHERE key LIKE ? ESCAPE '\\'",
+        (prefix.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%",))

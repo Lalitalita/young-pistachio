@@ -4,9 +4,9 @@ from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request, Response, WebSocket
 from fastapi.responses import FileResponse, RedirectResponse
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
-from . import content, db, qr
+from . import characters, content, db, phase1, qr
 from .config import settings
 from .hub import get_hub
 from .security import (COOKIE_VISITOR, VISITOR_MAX_AGE, client_ip, is_admin, limiter, make_token,
@@ -73,6 +73,38 @@ async def consent(body: ConsentBody, request: Request):
     vid = _current(request)
     get_hub().set_consent(vid, body.consent)
     return get_hub().me(vid)
+
+
+@router.get("/character")
+async def character(request: Request):
+    vid = _current(request)
+    return characters.get_or_create(vid)
+
+
+class TimesBody(BaseModel):
+    # Des temps de cassage énormes sont attendus (mots de passe très solides) : large marge.
+    online: float = Field(ge=0, le=1e60)
+    offline_fast: float = Field(ge=0, le=1e60)
+    gpu_farm: float = Field(ge=0, le=1e60)
+
+
+class Phase1Submit(BaseModel):
+    password: str = Field(min_length=1, max_length=128)
+    length: int = Field(ge=0, le=128)
+    score: float = Field(ge=0, le=100)
+    patterns: list[str] = Field(default_factory=list, max_length=25)
+    times: TimesBody
+
+
+@router.post("/phase1/submit")
+async def phase1_submit(body: Phase1Submit, request: Request):
+    vid = _current(request)
+    _limit(request, "p1submit", 30)
+    hub = get_hub()
+    res = phase1.save_submission(vid, hub.vis[vid]["pseudo"], {**body.model_dump(), "times": body.times.model_dump()})
+    hub.touch()
+    hub.request_broadcast(visitors=False)
+    return res
 
 
 @router.get("/qr/{kind}.svg")

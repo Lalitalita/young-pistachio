@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { api } from "./api";
-import { Mode, parseRich, pickText, TextValue } from "./richtext";
+import { interpolate, Mode, parseRich, pickText, TextValue } from "./richtext";
 
 interface Glossary { [key: string]: { label: string; simple: string; expert: string } }
 interface Ctx {
@@ -65,9 +65,9 @@ export function Rich({ text }: { text: string }) {
 }
 
 /** Texte éditable par clé, selon le mode. */
-export function T({ k, fallback }: { k: string; fallback?: string }) {
+export function T({ k, fallback, vars }: { k: string; fallback?: string; vars?: Record<string, string | number> }) {
   const { t } = useContent();
-  return <Rich text={t(k, fallback)} />;
+  return <Rich text={interpolate(t(k, fallback), vars)} />;
 }
 
 export function ModeToggle() {

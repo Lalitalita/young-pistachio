@@ -108,5 +108,10 @@
   "label": "robots.txt",
   "simple": "Un fichier qui dit aux moteurs de recherche quelles pages ne pas visiter, mais qui trahit parfois des pages secrètes.",
   "expert": "Fichier public à la racine du site ; les chemins « Disallow » sont une cible de reconnaissance classique."
+ },
+ "retention": {
+  "label": "durée de conservation",
+  "simple": "Le temps pendant lequel l'atelier garde une information avant de l'effacer automatiquement.",
+  "expert": "Purge automatique programmée côté serveur après N minutes ; réglable dans l'admin."
  }
 }

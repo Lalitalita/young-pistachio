@@ -40,5 +40,63 @@
  "p0.screen_title": "Bienvenue !",
  "p0.screen_lead": "Scanne le QR code pour rejoindre le parcours.",
  "p0.screen_recent": "Ils viennent de nous rejoindre",
- "p0.screen_optin": "ont accepté de voir leurs propres requêtes"
+ "p0.screen_optin": "ont accepté de voir leurs propres requêtes",
+ "p1.title": {
+  "curious": "Ton mot de passe tient combien de temps ?",
+  "expert": "Analyse de robustesse d'un mot de passe"
+ },
+ "p1.intro": {
+  "curious": "Voici un faux profil de réseau social. Crée un mot de passe pour le protéger : combien de temps tiendrait-il face à un pirate ?",
+  "expert": "Fiche fictive ci-dessous. Calcule un mot de passe dont l'entropie résiste à une attaque par [[brute-force|force brute]] informée (OSINT sur le profil)."
+ },
+ "p1.warning_title": "⚠️ Important",
+ "p1.warning_text": {
+  "curious": "N'utilise jamais un de tes vrais mots de passe ici ! Invente-en un nouveau, juste pour ce personnage. Il est envoyé à l'équipe de l'atelier et conservé 1h (pour pouvoir t'aider si tu reviens), puis supprimé automatiquement.",
+  "expert": "N'utilise jamais un mot de passe réel. Celui-ci est transmis au serveur de l'atelier (analyse + support en cas de retour) et purgé automatiquement après [[retention|une durée réglée par l'animateur]] (1h par défaut)."
+ },
+ "p1.character_title": "Le personnage à protéger",
+ "p1.password_label": "Ton mot de passe pour ce personnage",
+ "p1.password_placeholder": "Invente un mot de passe…",
+ "p1.target": {
+  "curious": "Objectif : tenir au moins {years} ans !",
+  "expert": "Cible : {years} ans avant cassage (hors ligne, hash rapide)"
+ },
+ "p1.time_online": "En ligne (limité)",
+ "p1.time_offline": "Hors ligne (hash rapide, GPU)",
+ "p1.time_gpu_farm": "Ferme de GPU",
+ "p1.submit": "Tester ce mot de passe",
+ "p1.retry": "Essayer un autre mot de passe",
+ "p1.continue": "Continuer",
+ "p1.success": {
+  "curious": "Bravo, ton mot de passe tient le choc ! 💪",
+  "expert": "Objectif atteint : robustesse suffisante."
+ },
+ "p1.fail": {
+  "curious": "Aïe, ce pirate l'aurait deviné bien trop vite…",
+  "expert": "Objectif non atteint : surface d'attaque trop réduite."
+ },
+ "p1.pitfalls_title": "Pièges détectés",
+ "p1.no_pitfalls": {
+  "curious": "Aucun piège évident détecté, bien joué !",
+  "expert": "Aucun motif connu détecté par l'analyseur."
+ },
+ "p1.lesson_title": "Pour de vrais mots de passe",
+ "p1.lesson_1": {
+  "curious": "Utilise une phrase de passe : 4 mots qui n'ont aucun rapport entre eux.",
+  "expert": "Privilégie une [[phrase-de-passe|phrase de passe]] de 4+ mots aléatoires : l'entropie vient de la longueur."
+ },
+ "p1.lesson_2": {
+  "curious": "Utilise un gestionnaire de mots de passe, un par site.",
+  "expert": "Un [[gestionnaire|gestionnaire de mots de passe]] génère un secret unique par service."
+ },
+ "p1.lesson_3": {
+  "curious": "Active la double authentification partout où c'est possible.",
+  "expert": "Active la [[2fa|double authentification]] (TOTP ou clé FIDO2) en complément."
+ },
+ "p1.screen_title": "Ton mot de passe tient combien de temps ?",
+ "p1.screen_target": "Objectif : {years} ans",
+ "p1.screen_record_strong": "🏆 Record du jour : le plus solide",
+ "p1.screen_record_progress": "📈 Meilleure progression",
+ "p1.screen_pitfalls": "Top des pièges du jour",
+ "p1.screen_feed": "En direct"
 }

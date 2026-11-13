@@ -12,7 +12,7 @@ from collections import deque
 
 from fastapi import WebSocket
 
-from . import content, db, pseudos, qr
+from . import characters, content, db, phase1, pseudos, qr
 from .phases import PHASES
 from .state import EventState
 
@@ -180,6 +180,7 @@ class Hub:
                        "opt_in": sum(1 for v in self.vis.values() if v["consent"])},
             "content_v": content.version(),
             "branding": branding, "qr": qr.info(st.screen), "demo": st.demo,
+            "p1": phase1.public_stats({v["id"] for v in self.vis.values() if v["hidden"]}),
             "recent": [{"pseudo": self.vis[i]["pseudo"]} for i in self.recent
                        if i in self.vis and not self.vis[i]["hidden"]],
         }
@@ -237,7 +238,14 @@ class Hub:
                     self._last_attract = a
                     self.request_broadcast(visitors=False)
 
+        async def purge():
+            while True:
+                await asyncio.sleep(90)
+                if phase1.purge_expired(self.state.params["p1"]["data_retention_min"]):
+                    self.request_broadcast(visitors=False)
+
         t = asyncio.create_task(ticker())
+        t2 = asyncio.create_task(purge())
         try:
             while True:
                 await self.dirty.wait()
@@ -246,11 +254,13 @@ class Hub:
                 await self.flush()
         finally:
             t.cancel()
+            t2.cancel()
 
     # ---------- reset de fin de journée ----------
     async def reset_day(self) -> None:
         db.run("DELETE FROM visitors")
         db.run("DELETE FROM scores")
+        db.kv_delete_prefix(characters.PREFIX)
         stale = [ws for vid, s in self.sockets.items() for ws in s]
         self.vis.clear()
         self.sockets.clear()

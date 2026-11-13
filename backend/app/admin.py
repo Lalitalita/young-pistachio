@@ -9,7 +9,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
-from . import content, db, schema
+from . import content, db, phase1, schema
 from .config import settings
 from .hub import get_hub
 from .phases import BY_ID, IDS, PHASES
@@ -207,6 +207,13 @@ async def put_term(key: str, body: ValueBody):
 async def del_term(key: str):
     content.reset_glossary(key)
     return _changed()
+
+
+@secured.get("/phase1/lookup")
+async def phase1_lookup(q: str = ""):
+    if len(q.strip()) < 2:
+        raise HTTPException(422, "Au moins 2 caractères")
+    return phase1.lookup(q.strip())
 
 
 @secured.get("/visitors")

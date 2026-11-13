@@ -3,7 +3,7 @@
 Atelier interactif pour la journée portes ouvertes de **Coda Avignon** (12 décembre 2026) :
 les visiteurs scannent un QR code, suivent un parcours cyber sur leur téléphone, et un grand écran affiche tout en direct.
 
-> **État : étape 2.** Socle (sessions, temps réel, admin, grand écran + veille + QR, bots de démo) + Phase 0 (accueil, opt-in), textes éditables, glossaire en infobulles et bascule Curieux/Expert. Les phases 1 à 4 sont encore des gabarits (étapes suivantes).
+> **État : étape 3.** Phase 0 + **Phase 1 jouable** (« Ton mot de passe tient combien de temps ? »). Les phases 2 à 4 sont encore des gabarits (étapes suivantes).
 
 Tout se build dans Docker : **aucune installation de Node ou Python sur le PC**.
 
@@ -47,6 +47,14 @@ Ouvre ensuite :
 - Dans un texte, `[[dns|DNS]]` rend le mot cliquable (définition du glossaire). On peut ajouter ses propres termes dans l'admin.
 - Chaque visiteur choisit **Curieux** (explication simple) ou **Expert** (termes techniques) ; le choix est mémorisé sur son téléphone.
 - **Opt-in** de l'accueil : case « j'accepte de voir mes propres requêtes réseau », comptée de façon anonyme sur l'écran ; sans accord, la phase 2 utilisera des données simulées.
+
+## Phase 1 : « Ton mot de passe tient combien de temps ? »
+
+- Chaque visiteur reçoit une **fiche personnage fictive** (prénom, nom, date de naissance, ville, animal, club, copain/copine) et invente un mot de passe pour la protéger.
+- **⚠️ Choix assumé, différent du cahier des charges initial** : contrairement à l'idée de départ (« le mot de passe ne quitte jamais le téléphone »), le mot de passe **est envoyé au serveur et conservé** (par défaut 1h, réglable 5–240 min dans l'admin, phase 1 → Réglages → « Conservation »), pour permettre de retrouver le résultat d'un visiteur qui revient. **Le texte affiché au visiteur le dit explicitement** et lui demande de ne jamais utiliser un vrai mot de passe. Purge automatique (tâche de fond, toutes les 90 s) ; jamais affiché sur le grand écran ; jamais dans l'export CSV (qui reste anonyme).
+- L'**analyse de robustesse tourne entièrement sur le téléphone** (algorithme [zxcvbn-ts](https://github.com/zxcvbn-ts/zxcvbn) + dictionnaires FR, chargés en tâche de fond pendant la phase 0, plus une couche « maison » : infos de la fiche, dates sous toutes leurs formes, années 1950→aujourd'hui, suites clavier AZERTY/QWERTY, leet speak, répétitions, schéma « Majuscule+mot+année+! », mots courants). Trois profils d'attaquant (en ligne limité, hors ligne hash rapide, ferme de GPU) donnent des ordres de grandeur pédagogiques.
+- Admin → **support visiteur** : `GET /api/admin/phase1/lookup?q=<pseudo>` retrouve les derniers résultats (dont le mot de passe) d'un pseudo, tant qu'ils ne sont pas purgés.
+- Grand écran : thermomètre géant avec la cible, records du jour, top des pièges, flux en direct (pseudo + score + pièges, jamais le mot de passe).
 
 ## Commandes
 

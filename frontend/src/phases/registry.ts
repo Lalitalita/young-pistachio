@@ -8,7 +8,7 @@ const plugin = (mobile: () => Promise<any>, screen: () => Promise<any>, preload?
 
 export const PHASES: Record<string, PhasePlugin> = {
   p0: plugin(() => import("./p0/Mobile"), () => import("./p0/Screen")),
-  p1: plugin(() => import("./p1/Mobile"), () => import("./p1/Screen")),
+  p1: plugin(() => import("./p1/Mobile"), () => import("./p1/Screen"), () => import("./p1/dictionaries").then((m) => m.ensureZxcvbn())),
   p2: plugin(() => import("./p2/Mobile"), () => import("./p2/Screen")),
   p3: plugin(() => import("./p3/Mobile"), () => import("./p3/Screen")),
   p4: plugin(() => import("./p4/Mobile"), () => import("./p4/Screen")),
