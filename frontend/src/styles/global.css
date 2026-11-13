@@ -1,0 +1,57 @@
+/* Charte Coda (extraite de coda.school) : jaune #ddf849, violet #4b00eb, fond #0a0a1f */
+:root {
+  --bg: #0a0a1f;
+  --bg-2: #14122b;
+  --card: #191733;
+  --ink: #ffffff;
+  --ink-dim: #b9b8d3;
+  --brand: #ddf849;
+  --brand-2: #6425f5;
+  --accent: #4b00eb;
+  --ok: #3ddc84;
+  --warn: #ffb020;
+  --bad: #ff5d6c;
+  --radius: 1.1rem;
+  font-family: "DM Sans Variable", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-height: 100%; }
+body {
+  background: radial-gradient(120% 80% at 50% -10%, #2a1370 0%, var(--bg) 55%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+h1, h2, h3 { font-family: "Space Grotesk Variable", "DM Sans Variable", sans-serif; line-height: 1.1; margin: 0 0 .5em; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 3.2rem; padding: 0 1.6rem; border: 0; border-radius: 999px;
+  background: var(--brand); color: #10101f; font: 700 1.05rem "Space Grotesk Variable", sans-serif;
+  cursor: pointer; text-decoration: none;
+}
+.card { background: var(--card); border-radius: var(--radius); padding: 1.2rem; }
+.status { display: inline-flex; gap: .5rem; align-items: center; font-size: .9rem; color: var(--ink-dim); }
+.dot { width: .7rem; height: .7rem; border-radius: 50%; background: var(--bad); }
+.dot.on { background: var(--ok); }
+
+/* --- Mobile --- */
+.page { max-width: 34rem; margin: 0 auto; padding: 1.2rem 1.2rem 3rem; display: flex; flex-direction: column; gap: 1.2rem; }
+.page img.logo { height: 2.4rem; align-self: flex-start; }
+.hero h1 { font-size: clamp(2rem, 9vw, 3rem); }
+.hero h1 em { color: var(--brand); font-style: normal; }
+.hero p { color: var(--ink-dim); font-size: 1.1rem; }
+
+/* --- Grand écran : tout en vw pour s'adapter à n'importe quelle taille --- */
+.screen {
+  min-height: 100vh; display: grid; place-items: center; text-align: center;
+  padding: 3vw; font-size: clamp(14px, 1.6vw, 40px);
+}
+.screen img.logo { height: 5vw; margin-bottom: 2vw; }
+.screen h1 { font-size: 6vw; }
+.screen h1 em { color: var(--brand); font-style: normal; }
+.screen p { font-size: 2vw; color: var(--ink-dim); margin: 0; }
+.screen .status { position: fixed; right: 1.5vw; bottom: 1vw; font-size: 1.2vw; }
+
+/* --- Admin --- */
+.admin { max-width: 60rem; margin: 0 auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
