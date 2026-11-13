@@ -3,7 +3,7 @@
 Atelier interactif pour la journée portes ouvertes de **Coda Avignon** (12 décembre 2026) :
 les visiteurs scannent un QR code, suivent un parcours cyber sur leur téléphone, et un grand écran affiche tout en direct.
 
-> **État : étape 0 (squelette).** Les 3 pages s'ouvrent et se connectent au serveur ; le parcours arrive aux étapes suivantes.
+> **État : étape 1 (socle).** Sessions et pseudos, temps réel (WebSocket), admin, grand écran avec veille + QR, générateur de QR, bots de démo. Les phases jouables arrivent aux étapes suivantes (les écrans de phase sont pour l'instant des gabarits).
 
 Tout se build dans Docker : **aucune installation de Node ou Python sur le PC**.
 
@@ -37,6 +37,13 @@ Ouvre ensuite :
 > Si le port 53 est déjà pris (systemd-resolved sur Ubuntu/Debian), Pi-hole ne démarrera pas :
 > `sudo mkdir -p /etc/systemd/resolved.conf.d && printf '[Resolve]\nDNSStubListener=no\n' | sudo tee /etc/systemd/resolved.conf.d/nostub.conf && sudo systemctl restart systemd-resolved`
 > (Le réglage réseau complet de la box est détaillé à l'étape 7 du projet.)
+
+## Utilisation (étape 1)
+
+- **Admin** (`/admin`, mot de passe = `ADMIN_PASSWORD` du `.env`) : progression *libre* ou *guidée* (« Ouvrir l'étape suivante » pour tout le monde), activer/réordonner les phases et régler leurs paramètres, choisir l'affichage du grand écran (rotation auto / phase fixe / veille), visiteurs en direct (renommer, masquer), QR codes à imprimer (Wi-Fi + parcours), contenus et charte (nom de l'école, couleurs, logo, formations, date/lieu, « atelier suivant »), **mode démo** (bots), export CSV anonyme, **reset de fin de journée**.
+- **Grand écran** (`/screen`) : passe tout seul en veille (animation + QR) après inactivité ; compteur de visiteurs ; s'adapte à toute taille de fenêtre.
+- **QR du parcours** : par défaut avec l'**IP** du PC (marche même si le DNS privé du téléphone contourne Pi-hole) ; case dans l'admin pour utiliser `parcours.cyber`.
+- Les contenus par défaut sont dans `content/*.json` ; ce qui est modifié dans l'admin est stocké en base et prend le dessus.
 
 ## Commandes
 

@@ -1,0 +1,22 @@
+{
+  "school_name": "Coda",
+  "event_title": "Journée portes ouvertes",
+  "event_date": "Samedi 12 décembre 2026 · 14h–17h",
+  "event_place": "Coda Avignon · 13 avenue de la Foire",
+  "next_workshop": "Atelier suivant",
+  "color_brand": "#ddf849",
+  "color_accent": "#6425f5",
+  "color_bg": "#0a0a1f",
+  "formations": [
+    {
+      "title": "Bachelor Informatique",
+      "level": "Bac+3",
+      "description": "Spécialité Systèmes & Réseaux ou Développement Full Stack."
+    },
+    {
+      "title": "Master of Science Cybersécurité & Infrastructures Réseaux",
+      "level": "Bac+5",
+      "description": "Concevoir, superviser et sécuriser les infrastructures."
+    }
+  ]
+}

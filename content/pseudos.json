@@ -1,0 +1,322 @@
+{
+ "animals": [
+  {
+   "n": "Renard",
+   "g": "m"
+  },
+  {
+   "n": "Panda",
+   "g": "m"
+  },
+  {
+   "n": "Lynx",
+   "g": "m"
+  },
+  {
+   "n": "Hibou",
+   "g": "m"
+  },
+  {
+   "n": "Dauphin",
+   "g": "m"
+  },
+  {
+   "n": "Loup",
+   "g": "m"
+  },
+  {
+   "n": "Tigre",
+   "g": "m"
+  },
+  {
+   "n": "Koala",
+   "g": "m"
+  },
+  {
+   "n": "Faucon",
+   "g": "m"
+  },
+  {
+   "n": "Corbeau",
+   "g": "m"
+  },
+  {
+   "n": "Lézard",
+   "g": "m"
+  },
+  {
+   "n": "Pingouin",
+   "g": "m"
+  },
+  {
+   "n": "Axolotl",
+   "g": "m"
+  },
+  {
+   "n": "Capybara",
+   "g": "m"
+  },
+  {
+   "n": "Hérisson",
+   "g": "m"
+  },
+  {
+   "n": "Castor",
+   "g": "m"
+  },
+  {
+   "n": "Requin",
+   "g": "m"
+  },
+  {
+   "n": "Dragon",
+   "g": "m"
+  },
+  {
+   "n": "Yéti",
+   "g": "m"
+  },
+  {
+   "n": "Robot",
+   "g": "m"
+  },
+  {
+   "n": "Alpaga",
+   "g": "m"
+  },
+  {
+   "n": "Pieuvre",
+   "g": "f"
+  },
+  {
+   "n": "Loutre",
+   "g": "f"
+  },
+  {
+   "n": "Panthère",
+   "g": "f"
+  },
+  {
+   "n": "Chouette",
+   "g": "f"
+  },
+  {
+   "n": "Libellule",
+   "g": "f"
+  },
+  {
+   "n": "Salamandre",
+   "g": "f"
+  },
+  {
+   "n": "Mouette",
+   "g": "f"
+  },
+  {
+   "n": "Baleine",
+   "g": "f"
+  },
+  {
+   "n": "Tortue",
+   "g": "f"
+  },
+  {
+   "n": "Fouine",
+   "g": "f"
+  },
+  {
+   "n": "Marmotte",
+   "g": "f"
+  },
+  {
+   "n": "Girafe",
+   "g": "f"
+  },
+  {
+   "n": "Licorne",
+   "g": "f"
+  },
+  {
+   "n": "Méduse",
+   "g": "f"
+  },
+  {
+   "n": "Fusée",
+   "g": "f"
+  },
+  {
+   "n": "Comète",
+   "g": "f"
+  },
+  {
+   "n": "Hirondelle",
+   "g": "f"
+  },
+  {
+   "n": "Mangouste",
+   "g": "f"
+  },
+  {
+   "n": "Belette",
+   "g": "f"
+  }
+ ],
+ "adjectives": [
+  {
+   "m": "Quantique",
+   "f": "Quantique"
+  },
+  {
+   "m": "Cosmique",
+   "f": "Cosmique"
+  },
+  {
+   "m": "Turbo",
+   "f": "Turbo"
+  },
+  {
+   "m": "Pixelisé",
+   "f": "Pixelisée"
+  },
+  {
+   "m": "Électrique",
+   "f": "Électrique"
+  },
+  {
+   "m": "Rusé",
+   "f": "Rusée"
+  },
+  {
+   "m": "Furtif",
+   "f": "Furtive"
+  },
+  {
+   "m": "Binaire",
+   "f": "Binaire"
+  },
+  {
+   "m": "Cybernétique",
+   "f": "Cybernétique"
+  },
+  {
+   "m": "Galactique",
+   "f": "Galactique"
+  },
+  {
+   "m": "Futé",
+   "f": "Futée"
+  },
+  {
+   "m": "Zen",
+   "f": "Zen"
+  },
+  {
+   "m": "Rapide",
+   "f": "Rapide"
+  },
+  {
+   "m": "Malin",
+   "f": "Maligne"
+  },
+  {
+   "m": "Hypersonique",
+   "f": "Hypersonique"
+  },
+  {
+   "m": "Magnétique",
+   "f": "Magnétique"
+  },
+  {
+   "m": "Fluorescent",
+   "f": "Fluorescente"
+  },
+  {
+   "m": "Astucieux",
+   "f": "Astucieuse"
+  },
+  {
+   "m": "Curieux",
+   "f": "Curieuse"
+  },
+  {
+   "m": "Lunaire",
+   "f": "Lunaire"
+  },
+  {
+   "m": "Stellaire",
+   "f": "Stellaire"
+  },
+  {
+   "m": "Volant",
+   "f": "Volante"
+  },
+  {
+   "m": "Cryptique",
+   "f": "Cryptique"
+  },
+  {
+   "m": "Numérique",
+   "f": "Numérique"
+  },
+  {
+   "m": "Vaillant",
+   "f": "Vaillante"
+  },
+  {
+   "m": "Joyeux",
+   "f": "Joyeuse"
+  },
+  {
+   "m": "Espiègle",
+   "f": "Espiègle"
+  },
+  {
+   "m": "Intrépide",
+   "f": "Intrépide"
+  },
+  {
+   "m": "Radieux",
+   "f": "Radieuse"
+  },
+  {
+   "m": "Mystérieux",
+   "f": "Mystérieuse"
+  },
+  {
+   "m": "Digital",
+   "f": "Digitale"
+  },
+  {
+   "m": "Ninja",
+   "f": "Ninja"
+  },
+  {
+   "m": "Atomique",
+   "f": "Atomique"
+  },
+  {
+   "m": "Holographique",
+   "f": "Holographique"
+  },
+  {
+   "m": "Neuronal",
+   "f": "Neuronale"
+  },
+  {
+   "m": "Sonique",
+   "f": "Sonique"
+  },
+  {
+   "m": "Agile",
+   "f": "Agile"
+  },
+  {
+   "m": "Brillant",
+   "f": "Brillante"
+  },
+  {
+   "m": "Zigzagant",
+   "f": "Zigzagante"
+  }
+ ]
+}

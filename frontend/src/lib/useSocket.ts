@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Role, Send } from "./types";
 
-export type Role = "visitor" | "screen" | "admin";
+export type { Role };
 
 /** Délai de reconnexion : backoff exponentiel plafonné, avec un peu de jitter. */
 export function backoffDelay(attempt: number, base = 500, cap = 15000, rand = Math.random): number {
@@ -8,34 +9,65 @@ export function backoffDelay(attempt: number, base = 500, cap = 15000, rand = Ma
   return Math.round(exp / 2 + rand() * (exp / 2));
 }
 
-/** WebSocket avec reconnexion automatique. `onMessage` est appelé pour chaque message JSON. */
-export function useSocket(role: Role, onMessage?: (m: any) => void) {
+interface Options {
+  enabled?: boolean;
+  /** Appelé avant chaque (re)connexion (ex. recréer la session visiteur). */
+  beforeConnect?: () => Promise<void>;
+}
+
+/**
+ * WebSocket avec reconnexion automatique. À chaque connexion le serveur renvoie l'état
+ * complet : la resynchronisation est donc automatique.
+ */
+export function useSocket(role: Role, onMessage: (m: any) => void, opts: Options = {}) {
   const [connected, setConnected] = useState(false);
+  const wsRef = useRef<WebSocket | null>(null);
   const handler = useRef(onMessage);
   handler.current = onMessage;
+  const before = useRef(opts.beforeConnect);
+  before.current = opts.beforeConnect;
+  const enabled = opts.enabled !== false;
 
   useEffect(() => {
-    let ws: WebSocket | null = null;
+    if (!enabled) return;
     let timer: number | undefined;
+    let hb: number | undefined;
     let attempt = 0;
     let stopped = false;
 
-    const open = () => {
+    const retry = () => { if (!stopped) timer = window.setTimeout(open, backoffDelay(attempt++)); };
+
+    const open = async () => {
+      if (stopped) return;
+      try { await before.current?.(); } catch { retry(); return; }
+      if (stopped) return;
       const proto = location.protocol === "https:" ? "wss" : "ws";
-      ws = new WebSocket(`${proto}://${location.host}/ws/${role}`);
-      ws.onopen = () => { attempt = 0; setConnected(true); };
+      const ws = new WebSocket(`${proto}://${location.host}/api/ws/${role}`);
+      wsRef.current = ws;
+      ws.onopen = () => {
+        attempt = 0;
+        setConnected(true);
+        hb = window.setInterval(() => ws.readyState === 1 && ws.send('{"type":"hb"}'), 25000);
+      };
       ws.onmessage = (e) => {
-        try { handler.current?.(JSON.parse(e.data)); } catch { /* message ignoré */ }
+        try { handler.current(JSON.parse(e.data)); } catch { /* message ignoré */ }
       };
       ws.onclose = () => {
+        clearInterval(hb);
         setConnected(false);
-        if (!stopped) timer = window.setTimeout(open, backoffDelay(attempt++));
+        wsRef.current = null;
+        retry();
       };
-      ws.onerror = () => ws?.close();
+      ws.onerror = () => ws.close();
     };
     open();
-    return () => { stopped = true; clearTimeout(timer); ws?.close(); };
-  }, [role]);
+    return () => { stopped = true; clearTimeout(timer); clearInterval(hb); wsRef.current?.close(); };
+  }, [role, enabled]);
 
-  return connected;
+  const send: Send = useCallback((m) => {
+    const ws = wsRef.current;
+    if (ws && ws.readyState === 1) ws.send(JSON.stringify(m));
+  }, []);
+
+  return { connected, send };
 }

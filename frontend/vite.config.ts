@@ -8,8 +8,7 @@ export default defineConfig({
   build: { target: "es2019", cssTarget: "chrome61" },
   server: {
     proxy: {
-      "/api": "http://localhost:8000",
-      "/ws": { target: "ws://localhost:8000", ws: true },
+      "/api": { target: "http://localhost:8000", ws: true },
     },
   },
   test: { environment: "node" },
