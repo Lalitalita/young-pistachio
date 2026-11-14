@@ -1,2 +1,4 @@
 <!doctype html><html lang="fr"><meta charset="utf-8"><title>Entreprise de démo</title>
-<h1>Entreprise de démo</h1><p>Site vitrine (nginx). Servira à la phase 3.</p>
+<h1>Entreprise de démo</h1><p>Site vitrine (nginx) — sert à la phase « Panne en prod ! ».</p>
+<ul id="p"></ul>
+<script>fetch("/api/produits").then(r=>r.json()).then(d=>{p.innerHTML=d.produits.map(x=>"<li>"+x+"</li>").join("")}).catch(()=>{p.textContent="Catalogue indisponible"})</script>

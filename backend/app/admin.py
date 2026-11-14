@@ -9,7 +9,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 
-from . import content, db, phase1, schema
+from . import chaos, content, db, phase1, schema
 from .config import settings
 from .hub import get_hub
 from .phases import BY_ID, IDS, PHASES
@@ -214,6 +214,51 @@ async def phase1_lookup(q: str = ""):
     if len(q.strip()) < 2:
         raise HTTPException(422, "Au moins 2 caractères")
     return phase1.lookup(q.strip())
+
+
+class BossBody(BaseModel):
+    target: Literal["demo-web", "demo-api", "demo-db"] | None = None
+
+
+@secured.post("/phase3/boss")
+async def p3_boss(body: BossBody):
+    """Déclenche la panne « boss » tout de suite (ignore file d'attente et délai)."""
+    hub = get_hub()
+    err = await hub.boss.start(hub.state.params["p3"], "l'animateur", body.target, force=True)
+    if err == "busy":
+        raise HTTPException(409, "Une panne est déjà en cours")
+    if err == "agent":
+        raise HTTPException(502, hub.boss.last_error or "chaos-agent injoignable")
+    hub.request_broadcast(visitors=False)
+    return {"ok": True}
+
+
+@secured.post("/phase3/restore")
+async def p3_restore():
+    """Filet de sécurité : relance tous les services de démo et remet la panne à zéro."""
+    hub = get_hub()
+    errors = await hub.boss.restore_all()
+    hub.request_broadcast(visitors=False)
+    return {"ok": not errors, "errors": errors}
+
+
+@secured.delete("/phase3/queue")
+async def p3_queue_clear():
+    hub = get_hub()
+    hub.boss.cancel_queue()
+    hub.request_broadcast(visitors=False)
+    return {"ok": True}
+
+
+@secured.get("/phase3/agent")
+async def p3_agent():
+    """État réel des conteneurs de démo vu par le chaos-agent."""
+    import asyncio
+
+    try:
+        return {"ok": True, "status": await asyncio.to_thread(chaos.status)}
+    except chaos.ChaosError as e:
+        return {"ok": False, "error": str(e)}
 
 
 @secured.get("/visitors")

@@ -31,7 +31,8 @@ case "${1:-help}" in
   test)
     # Tests dans des conteneurs jetables (rien à installer sur le PC).
     docker run --rm -v "$PWD/frontend:/f" -w /f node:22-alpine sh -c "npm ci --no-audit --no-fund && npm test"
-    docker run --rm -v "$PWD/backend:/b" -w /b python:3.12-slim sh -c "pip install -q -r requirements-dev.txt && pytest -q" ;;
+    docker run --rm -v "$PWD/backend:/b" -w /b python:3.12-slim sh -c "pip install -q -r requirements-dev.txt && pytest -q"
+    docker run --rm -v "$PWD/chaos-agent:/c" -w /c python:3.12-slim sh -c "pip install -q pytest==8.3.4 && pytest -q" ;;
   *)
     echo "Usage: ./cyber.sh {up|update|logs [service]|ps|down|reset|kiosk|test}" ;;
 esac

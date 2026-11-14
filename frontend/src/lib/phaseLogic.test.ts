@@ -32,3 +32,17 @@ describe("screenView", () => {
   it("phase fixée désactivée → première active", () =>
     expect(screenView(mk({}, { mode: "phase", phase_id: "p2" }), 0)).toEqual({ kind: "phase", id: "p0" }));
 });
+
+describe("screenView : panne majeure", () => {
+  const withBoss = (status: string, attract = false, p3Enabled = true) =>
+    mk({
+      attract,
+      phases: ["p0", "p1", "p3"].map((id) => ({ id, enabled: id !== "p3" || p3Enabled })) as any,
+      p3: { boss: { status } } as any,
+    });
+  it("prend la main sur la rotation", () => expect(screenView(withBoss("voting"), 0)).toEqual({ kind: "phase", id: "p3" }));
+  it("prend la main même en veille", () => expect(screenView(withBoss("recovering", true), 0)).toEqual({ kind: "phase", id: "p3" }));
+  it("ne fait rien au repos", () => expect(screenView(withBoss("idle", true), 0)).toEqual({ kind: "attract" }));
+  it("ignore la panne si la phase 3 est désactivée", () => expect(screenView(withBoss("voting", true, false), 0)).toEqual({ kind: "attract" }));
+});
+

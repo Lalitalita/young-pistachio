@@ -67,15 +67,28 @@ docker compose up -d --build
    explicitement et déconseille d'utiliser un vrai mot de passe** — c'est la condition posée
    avant d'implémenter ce changement, à ne pas retirer si tu modifies ces textes.
 
+6. **Étape 4 — Phase 3 : « Panne en prod ! »**
+   - `chaos-agent` réel (`chaos-agent/agent.py`, 6 tests) : réseau interne, jeton, allowlist stricte
+     (demo-web/api/db), stop/start seulement, rate limit + délai, chien de garde (relance auto après 3 min),
+     Docker via `docker-socket-proxy` restreint (le socket n'est monté que là, en lecture seule).
+   - Demo : nginx → API → Postgres réels (`demo/`), conteneurs nommés `cp-demo-*`.
+   - Backend : `phase3.py` (7 incidents dans `content/incidents.json`, bonne réponse jamais envoyée au
+     téléphone, indices payants comptés côté serveur), `supervision.py` (sondes + vrai ping du Pi avec repli
+     TCP, détection débranchement), `boss.py` (file d'attente, délai, vote, redémarrage auto).
+   - Front : `phases/p3/` (mobile + salle de contrôle), la panne majeure prend la main sur le grand écran
+     (rouge), onglet admin « Panne en prod » (déclencher, tout rétablir, vider la file, état du chaos-agent).
+   - Réglages admin : boss on/off, délai, durée du vote, **« vraie panne » décochable = panne simulée**
+     (répétition sans Docker).
+
 ### État des tests (au dernier commit)
-- Backend : 60 tests pytest (`cd backend && pytest -q`, ou `./cyber.sh test`).
-- Front : 91 tests Vitest (`cd frontend && npm test`).
+- Backend : 82 tests pytest (+ 6 chaos-agent) (`cd backend && pytest -q`, ou `./cyber.sh test`).
+- Front : 98 tests Vitest (`cd frontend && npm test`).
 - Build front vérifié, CI GitHub Actions en place (pas pu être exécutée dans cet environnement
   cloud, faute de démon Docker — à vérifier chez toi que les 3 jobs passent bien).
 
 ## Ce qu'il reste à faire (reprend l'ordre du prompt original)
 
-- **Étape 4 — Phase 3 : « Panne en prod ! »** Mini-entreprise de démo (déjà dans le compose :
+- ~~**Étape 4 — Phase 3**~~ ✅ **FAITE** (voir section « Étape 4 » ci-dessous). Ancien descriptif : Mini-entreprise de démo (déjà dans le compose :
   `demo-web`, `demo-db`, `demo-api`, à étoffer), tableau de supervision sur le grand écran, le
   Raspberry Pi comme « serveur physique » avec un vrai ping (repli TCP si ICMP filtré),
   incidents individuels tirés au hasard sur chaque téléphone, moment « boss » (vraie panne,

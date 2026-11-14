@@ -9,6 +9,7 @@ os.environ["ADMIN_PASSWORD"] = "test-admin"
 os.environ["SECRET_KEY"] = "test-secret"
 os.environ["CONTENT_DIR"] = str(ROOT.parent / "content")
 os.environ["STATIC_DIR"] = tempfile.mkdtemp()
+os.environ["PROBES_ENABLED"] = "0"
 os.environ["WIFI_SSID"] = "MonWifi"
 os.environ["WIFI_PASSWORD"] = "p;ss:word"
 

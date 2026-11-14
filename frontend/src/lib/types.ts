@@ -14,6 +14,24 @@ export interface ScreenSettings {
   mode: "auto" | "phase" | "attract"; phase_id: string; rotation_s: number;
   attract_after_s: number; show_wifi_qr: boolean; qr_use_host: boolean;
 }
+export type Bilingual = string | { curious: string; expert: string };
+export interface P3Service { id: string; label: string; icon: string; kind: "container" | "service" | "physical"; status: "up" | "degraded" | "down" | "unknown"; ms: number | null }
+export interface P3Boss {
+  status: "idle" | "voting" | "recovering"; target: string | null; by: string | null; real: boolean;
+  vote_ends_at: number | null; votes: number[]; total_votes: number;
+  result: { total: number; correct: number; pct: number; answer: number } | null;
+  cooldown_s: number; queue: string[]; queue_len: number; error: string | null;
+}
+export interface P3State {
+  services: P3Service[]; events: { t: number; text: string; level: "ok" | "warn" | "bad" }[];
+  pi_changed_at: number | null; pi_configured: boolean; boss: P3Boss;
+  boss_content: { question: Bilingual; choices: Bilingual[]; answer: number; explanation: Bilingual };
+  stats: {
+    solved: number; avg_elapsed: number | null; top: { pseudo: string; score: number }[];
+    fastest: { pseudo: string; elapsed: number } | null;
+    feed: { pseudo: string; incident: string; score: number }[]; by_incident: Record<string, number>;
+  };
+}
 export interface PublicState {
   server_time: number; mode: "free" | "guided"; phases: PhaseInfo[]; guided_open: string[];
   screen: ScreenSettings; attract: boolean;
@@ -23,6 +41,7 @@ export interface PublicState {
   qr: { url: string; alt_url: string; ssid: string; wifi: boolean };
   demo: { enabled: boolean; count: number };
   recent: { pseudo: string }[];
+  p3: P3State;
   p1: {
     count: number;
     strongest: { pseudo: string; score: number; offline_fast: number } | null;

@@ -6,14 +6,16 @@ ce qui donne aussi la resynchronisation gratuite à chaque (re)connexion.
 """
 import asyncio
 import json
+import re
 import secrets
 import time
 from collections import deque
 
 from fastapi import WebSocket
 
-from . import characters, content, db, phase1, pseudos, qr
+from . import boss as bossmod, characters, chaos, content, db, phase1, phase3, pseudos, qr, supervision
 from .phases import PHASES
+from .config import settings
 from .state import EventState
 
 TITLES = {p["id"]: p for p in PHASES}
@@ -23,6 +25,10 @@ class Hub:
     def __init__(self) -> None:
         self.state = EventState()
         self.state.load()
+        self.monitor = supervision.Monitor()
+        self.boss = bossmod.Boss(self.monitor)
+        self.p3 = phase3.Sessions()
+        self._p3_sig = ''
         self.vis: dict[str, dict] = {}  # visiteurs réels (persistés) + bots (mémoire)
         self.sockets: dict[str, set[WebSocket]] = {}
         self.screens: set[WebSocket] = set()
@@ -181,9 +187,15 @@ class Hub:
             "content_v": content.version(),
             "branding": branding, "qr": qr.info(st.screen), "demo": st.demo,
             "p1": phase1.public_stats({v["id"] for v in self.vis.values() if v["hidden"]}),
+            "p3": self.p3_public(),
             "recent": [{"pseudo": self.vis[i]["pseudo"]} for i in self.recent
                        if i in self.vis and not self.vis[i]["hidden"]],
         }
+
+    def p3_public(self) -> dict:
+        hidden = {v["id"] for v in self.vis.values() if v["hidden"]}
+        return {**self.monitor.public(), "boss": self.boss.public(),
+                "stats": phase3.public_stats(hidden), "boss_content": phase3.boss_content()}
 
     def visitor_list(self) -> list[dict]:
         rows = sorted(self.vis.values(), key=lambda v: -v["created_at"])[:300]
@@ -244,8 +256,29 @@ class Hub:
                 if phase1.purge_expired(self.state.params["p1"]["data_retention_min"]):
                     self.request_broadcast(visitors=False)
 
+        async def supervise():
+            """Sondes + machine à états du boss, ~toutes les 2 s (seulement si quelqu'un regarde)."""
+            if settings.probes_enabled and settings.chaos_token:  # au démarrage : on remet tout en route
+                for svc in chaos.SERVICES:
+                    try:
+                        await asyncio.to_thread(chaos.action, svc, "start")
+                    except Exception:
+                        break
+            while True:
+                await asyncio.sleep(2)
+                params = self.state.params["p3"]
+                if settings.probes_enabled:
+                    await self.monitor.refresh()
+                await self.boss.tick(params)
+                sig = json.dumps([self.monitor.public(), self.boss.public()], sort_keys=True, default=str)
+                sig = re.sub(r'"cooldown_s": \d+', "", sig)
+                if sig != self._p3_sig:
+                    self._p3_sig = sig
+                    self.request_broadcast(visitors=False)
+
         t = asyncio.create_task(ticker())
         t2 = asyncio.create_task(purge())
+        t3 = asyncio.create_task(supervise())
         try:
             while True:
                 await self.dirty.wait()
@@ -255,12 +288,15 @@ class Hub:
         finally:
             t.cancel()
             t2.cancel()
+            t3.cancel()
 
     # ---------- reset de fin de journée ----------
     async def reset_day(self) -> None:
         db.run("DELETE FROM visitors")
         db.run("DELETE FROM scores")
         db.kv_delete_prefix(characters.PREFIX)
+        self.p3.clear()
+        self.boss.queue.clear()
         stale = [ws for vid, s in self.sockets.items() for ws in s]
         self.vis.clear()
         self.sockets.clear()

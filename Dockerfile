@@ -9,6 +9,8 @@ RUN npm run build
 # ---- Étape 2 : image finale Python qui sert l'API + le front buildé ----
 FROM python:3.12-slim AS app
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+# ping : vrai ICMP vers le Raspberry Pi (repli TCP automatique s'il est indisponible)
+RUN apt-get update && apt-get install -y --no-install-recommends iputils-ping && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt

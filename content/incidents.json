@@ -1,0 +1,456 @@
+{
+ "incidents": [
+  {
+   "id": "web_down",
+   "icon": "🌐",
+   "title": {
+    "curious": "Le site de l'entreprise est inaccessible",
+    "expert": "Le site de l'entreprise est inaccessible"
+   },
+   "symptom": {
+    "curious": "Les clients voient « Impossible de se connecter ». Le serveur, lui, a l'air allumé.",
+    "expert": "HTTP : « connexion refusée » sur le port 80. Le serveur est allumé."
+   },
+   "clues": [
+    {
+     "kind": "ping",
+     "label": "[[ping|Ping]] du serveur",
+     "text": {
+      "curious": "Le serveur répond au ping : la machine est bien allumée et branchée.",
+      "expert": "PING 10.0.0.12 : 4 paquets envoyés, 4 reçus, 0 % de perte, ~0,4 ms"
+     }
+    },
+    {
+     "kind": "log",
+     "label": "[[log|Journal]] du serveur web",
+     "text": {
+      "curious": "Le journal dit que le programme du site web s'est arrêté il y a quelques minutes.",
+      "expert": "systemd[1]: nginx.service: Main process exited, code=killed, status=9/KILL\nsystemd[1]: nginx.service: Failed with result 'signal'."
+     }
+    },
+    {
+     "kind": "error",
+     "label": "Message d'erreur",
+     "text": {
+      "curious": "Le navigateur dit que le serveur refuse la connexion : personne n'écoute à la porte du site.",
+      "expert": "curl: (7) Failed to connect to 10.0.0.12 port 80: Connection refused"
+     }
+    }
+   ],
+   "choices": [
+    {
+     "curious": "Le service web est arrêté",
+     "expert": "Le service nginx est arrêté (processus tué)"
+    },
+    {
+     "curious": "Le disque du serveur est plein",
+     "expert": "Le disque est plein (no space left on device)"
+    },
+    {
+     "curious": "Le câble réseau est débranché",
+     "expert": "Le lien réseau est tombé (link down)"
+    }
+   ],
+   "answer": 0,
+   "fix": {
+    "curious": "Redémarrer le service web",
+    "expert": "systemctl restart nginx"
+   },
+   "lesson": {
+    "curious": "Quand une machine répond mais que le service refuse la connexion, c'est le programme qui est arrêté, pas le réseau.",
+    "expert": "Ping OK + port fermé = machine joignable, service arrêté. Toujours distinguer couche réseau et couche applicative."
+   }
+  },
+  {
+   "id": "db_down",
+   "icon": "🗄️",
+   "title": {
+    "curious": "La boutique en ligne affiche des erreurs",
+    "expert": "La boutique en ligne affiche des erreurs"
+   },
+   "symptom": {
+    "curious": "Le site s'ouvre, mais dès qu'on cherche un produit : « Erreur 500 ».",
+    "expert": "Le front répond, mais toute requête produit renvoie HTTP 500."
+   },
+   "clues": [
+    {
+     "kind": "ping",
+     "label": "[[ping|Ping]] du serveur de données",
+     "text": {
+      "curious": "Le serveur de données répond au ping : il est allumé.",
+      "expert": "PING db.interne : 0 % de perte, ~0,6 ms"
+     }
+    },
+    {
+     "kind": "log",
+     "label": "[[log|Journal]] de l'application",
+     "text": {
+      "curious": "L'application raconte qu'elle n'arrive plus à parler à la base de données.",
+      "expert": "api ERROR: could not connect to server: Connection refused (db:5432)\napi ERROR: request /produits -> 500"
+     }
+    },
+    {
+     "kind": "error",
+     "label": "Message d'erreur",
+     "text": {
+      "curious": "La base de données (là où sont rangés les produits) ne répond plus.",
+      "expert": "psql: error: connection to server at \"db\" (10.0.0.20), port 5432 failed: Connection refused"
+     }
+    }
+   ],
+   "choices": [
+    {
+     "curious": "La base de données est arrêtée",
+     "expert": "Le service PostgreSQL est arrêté"
+    },
+    {
+     "curious": "Le site web est mal écrit",
+     "expert": "Le code du front a un bug de rendu"
+    },
+    {
+     "curious": "Internet est coupé",
+     "expert": "Le DNS externe est en panne"
+    }
+   ],
+   "answer": 0,
+   "fix": {
+    "curious": "Relancer la base de données",
+    "expert": "docker start db"
+   },
+   "lesson": {
+    "curious": "Une application dépend de ses services : si la base tombe, tout le site affiche des erreurs.",
+    "expert": "Chaîne de dépendances : front → API → BDD. L'erreur visible n'est pas toujours la cause : remonte les logs."
+   }
+  },
+  {
+   "id": "dns_broken",
+   "icon": "🔎",
+   "title": {
+    "curious": "« Site introuvable » partout, mais Internet marche",
+    "expert": "« Site introuvable » partout, mais Internet marche"
+   },
+   "symptom": {
+    "curious": "Les ordinateurs ouvrent bien certaines pages par leur adresse chiffrée, mais plus par leur nom.",
+    "expert": "Résolution de noms KO ; la connectivité IP est intacte."
+   },
+   "clues": [
+    {
+     "kind": "ping",
+     "label": "[[ping|Ping]] de l'adresse, puis du nom",
+     "text": {
+      "curious": "Ping vers l'adresse chiffrée : ça marche. Ping vers le nom du site : « nom inconnu ».",
+      "expert": "ping 1.1.1.1 : OK\nping www.exemple.fr : Name or service not known"
+     }
+    },
+    {
+     "kind": "log",
+     "label": "[[log|Journal]] du résolveur",
+     "text": {
+      "curious": "Le « annuaire » qui traduit les noms en adresses ne répond plus.",
+      "expert": "systemd-resolved: Using degraded feature set UDP; timeout contacting 192.168.1.1:53"
+     }
+    },
+    {
+     "kind": "error",
+     "label": "Message d'erreur",
+     "text": {
+      "curious": "Le navigateur affiche « Impossible de trouver l'adresse du serveur ».",
+      "expert": "ERR_NAME_NOT_RESOLVED"
+     }
+    }
+   ],
+   "choices": [
+    {
+     "curious": "Le DNS (l'annuaire d'Internet) est en panne",
+     "expert": "Le serveur DNS ne répond plus"
+    },
+    {
+     "curious": "Le serveur web est éteint",
+     "expert": "nginx est arrêté"
+    },
+    {
+     "curious": "La carte réseau est cassée",
+     "expert": "L'interface réseau est down"
+    }
+   ],
+   "answer": 0,
+   "fix": {
+    "curious": "Redémarrer le DNS",
+    "expert": "systemctl restart pihole-FTL"
+   },
+   "lesson": {
+    "curious": "Sans DNS, on ne trouve plus les sites par leur nom, même si le réseau fonctionne.",
+    "expert": "Ping IP OK + résolution KO = couche DNS. Test rapide : dig @1.1.1.1 puis dig @serveur-local."
+   }
+  },
+  {
+   "id": "disk_full",
+   "icon": "💾",
+   "title": {
+    "curious": "Le serveur ne peut plus rien enregistrer",
+    "expert": "Le serveur ne peut plus rien enregistrer"
+   },
+   "symptom": {
+    "curious": "Les utilisateurs n'arrivent plus à envoyer de fichiers et les sauvegardes échouent.",
+    "expert": "Écritures impossibles : uploads et sauvegardes en erreur."
+   },
+   "clues": [
+    {
+     "kind": "ping",
+     "label": "[[ping|Ping]] du serveur",
+     "text": {
+      "curious": "Le serveur répond au ping et le site s'affiche : tout semble normal… en lecture.",
+      "expert": "PING : 0 % de perte. HTTP GET OK (lecture seule)"
+     }
+    },
+    {
+     "kind": "log",
+     "label": "[[log|Journal]] du système",
+     "text": {
+      "curious": "Le journal répète « plus de place sur le disque ».",
+      "expert": "kernel: EXT4-fs: write failed, No space left on device\nbackup.sh: cannot create /var/backups/db.sql: No space left on device"
+     }
+    },
+    {
+     "kind": "error",
+     "label": "Espace disque",
+     "text": {
+      "curious": "Le disque est rempli à 100 % : il ne reste plus un seul octet.",
+      "expert": "$ df -h /\n/dev/sda1  40G  40G  0  100% /"
+     }
+    }
+   ],
+   "choices": [
+    {
+     "curious": "Le disque est plein",
+     "expert": "Le disque est saturé (100 % utilisé)"
+    },
+    {
+     "curious": "Le câble réseau est débranché",
+     "expert": "Le lien réseau est down"
+    },
+    {
+     "curious": "Le mot de passe a expiré",
+     "expert": "Le compte de service a expiré"
+    }
+   ],
+   "answer": 0,
+   "fix": {
+    "curious": "Libérer de l'espace (supprimer les vieux fichiers)",
+    "expert": "journalctl --vacuum-size=100M && rm /var/log/*.gz"
+   },
+   "lesson": {
+    "curious": "Un disque plein bloque les écritures. Surveiller l'espace libre évite la panne.",
+    "expert": "Monitoring : alerte à 80 % d'utilisation, rotation des logs (logrotate), quotas."
+   }
+  },
+  {
+   "id": "cable",
+   "icon": "🔌",
+   "title": {
+    "curious": "Le serveur de l'atelier ne répond plus du tout",
+    "expert": "Le serveur de l'atelier ne répond plus du tout"
+   },
+   "symptom": {
+    "curious": "Plus rien ne passe : ni le site, ni les fichiers. Pourtant la lumière du serveur est allumée.",
+    "expert": "Hôte totalement injoignable ; l'alimentation est OK."
+   },
+   "clues": [
+    {
+     "kind": "ping",
+     "label": "[[ping|Ping]] du serveur",
+     "text": {
+      "curious": "Le ping ne reçoit aucune réponse : « Hôte inaccessible ».",
+      "expert": "From 10.0.0.1 icmp_seq=1 Destination Host Unreachable (100 % de perte)"
+     }
+    },
+    {
+     "kind": "log",
+     "label": "[[log|Journal]] de l'interrupteur (switch)",
+     "text": {
+      "curious": "Le switch signale que le câble de ce serveur ne transmet plus rien.",
+      "expert": "switch: Gi0/7 changed state to down (link loss)"
+     }
+    },
+    {
+     "kind": "error",
+     "label": "État de la prise réseau",
+     "text": {
+      "curious": "Les petites lumières de la prise réseau sont éteintes.",
+      "expert": "NIC: no carrier (link down)"
+     }
+    }
+   ],
+   "choices": [
+    {
+     "curious": "Le câble réseau est débranché",
+     "expert": "Perte de lien physique (no carrier)"
+    },
+    {
+     "curious": "Le site web a un bug",
+     "expert": "Erreur applicative HTTP 500"
+    },
+    {
+     "curious": "Le disque est plein",
+     "expert": "Disque saturé"
+    }
+   ],
+   "answer": 0,
+   "fix": {
+    "curious": "Rebrancher le câble",
+    "expert": "Reconnecter le câble RJ45 sur le switch"
+   },
+   "lesson": {
+    "curious": "Quand rien ne répond, pense d'abord au plus simple : le câble ! La panne est parfois physique.",
+    "expert": "Diagnostic couche 1 d'abord : lien, câble, port du switch, avant de chercher côté logiciel."
+   }
+  },
+  {
+   "id": "cpu",
+   "icon": "🔥",
+   "title": {
+    "curious": "Le serveur est lent comme un escargot",
+    "expert": "Le serveur est lent comme un escargot"
+   },
+   "symptom": {
+    "curious": "Chaque page met une minute à s'afficher. Le serveur chauffe et son ventilateur hurle.",
+    "expert": "Latence extrême ; charge CPU saturée."
+   },
+   "clues": [
+    {
+     "kind": "ping",
+     "label": "[[ping|Ping]] du serveur",
+     "text": {
+      "curious": "Le ping répond, mais très lentement (plusieurs secondes).",
+      "expert": "PING : 0 % de perte, mais ~3200 ms de latence"
+     }
+    },
+    {
+     "kind": "log",
+     "label": "Liste des programmes en cours",
+     "text": {
+      "curious": "Un seul programme inconnu utilise presque toute la puissance du processeur.",
+      "expert": "$ top\nPID 4821  miner.sh  CPU 398 %  MEM 1.2G\nload average: 38.2, 31.7, 20.4"
+     }
+    },
+    {
+     "kind": "error",
+     "label": "Message d'erreur",
+     "text": {
+      "curious": "Les pages mettent trop de temps à répondre : le navigateur abandonne.",
+      "expert": "HTTP 504 Gateway Timeout"
+     }
+    }
+   ],
+   "choices": [
+    {
+     "curious": "Un programme fou monopolise le processeur",
+     "expert": "Un processus saturé consomme tout le CPU"
+    },
+    {
+     "curious": "Le câble réseau est débranché",
+     "expert": "Lien réseau down"
+    },
+    {
+     "curious": "Le DNS est en panne",
+     "expert": "Résolveur DNS KO"
+    }
+   ],
+   "answer": 0,
+   "fix": {
+    "curious": "Arrêter le programme fautif",
+    "expert": "kill -9 4821"
+   },
+   "lesson": {
+    "curious": "Un programme qui s'emballe peut mettre à genoux un serveur. On le repère dans la liste des processus.",
+    "expert": "top / htop : repérer le PID gourmand. Si inconnu, c'est peut-être un malware (cryptomineur) : investigation sécurité."
+   }
+  },
+  {
+   "id": "config",
+   "icon": "📝",
+   "title": {
+    "curious": "Plus rien ne marche depuis la mise à jour",
+    "expert": "Plus rien ne marche depuis la mise à jour"
+   },
+   "symptom": {
+    "curious": "Après une modification, le site refuse de redémarrer. L'équipe a changé un fichier de réglages.",
+    "expert": "Le service ne redémarre plus après une modification de configuration."
+   },
+   "clues": [
+    {
+     "kind": "ping",
+     "label": "[[ping|Ping]] du serveur",
+     "text": {
+      "curious": "La machine répond : elle est en bon état.",
+      "expert": "PING : 0 % de perte, ~0,5 ms"
+     }
+    },
+    {
+     "kind": "log",
+     "label": "[[log|Journal]] au démarrage",
+     "text": {
+      "curious": "Le journal pointe une faute de frappe dans le fichier de réglages, ligne 12.",
+      "expert": "nginx: [emerg] unknown directive \"servr_name\" in /etc/nginx/conf.d/site.conf:12\nnginx: configuration file test failed"
+     }
+    },
+    {
+     "kind": "error",
+     "label": "Test de la configuration",
+     "text": {
+      "curious": "Le test des réglages échoue : le programme refuse de démarrer avec ce fichier.",
+      "expert": "$ nginx -t\nnginx: configuration file /etc/nginx/nginx.conf test failed"
+     }
+    }
+   ],
+   "choices": [
+    {
+     "curious": "Une erreur dans le fichier de réglages",
+     "expert": "Une erreur de syntaxe dans la configuration"
+    },
+    {
+     "curious": "Le disque est plein",
+     "expert": "Disque saturé"
+    },
+    {
+     "curious": "Le serveur est éteint",
+     "expert": "Hôte hors tension"
+    }
+   ],
+   "answer": 0,
+   "fix": {
+    "curious": "Corriger la faute de frappe puis redémarrer",
+    "expert": "Corriger servr_name -> server_name ; nginx -t && systemctl reload nginx"
+   },
+   "lesson": {
+    "curious": "Une simple faute de frappe peut tout bloquer. On teste toujours les réglages avant de redémarrer.",
+    "expert": "Valider la configuration avant rechargement (nginx -t), versionner les changements (git) pour pouvoir revenir en arrière."
+   }
+  }
+ ],
+ "boss": {
+  "question": {
+   "curious": "Que s'est-il passé ? Vote avec les indices de l'écran !",
+   "expert": "Cause probable ? Indices : machine joignable, port fermé."
+  },
+  "choices": [
+   {
+    "curious": "Un service a été arrêté",
+    "expert": "Conteneur arrêté (processus tué)"
+   },
+   {
+    "curious": "Le disque du serveur est plein",
+    "expert": "Disque saturé"
+   },
+   {
+    "curious": "Un câble réseau est débranché",
+    "expert": "Lien physique down"
+   }
+  ],
+  "answer": 0,
+  "explanation": {
+   "curious": "Bien vu : la machine répondait, c'est le service qui avait été coupé. On le redémarre !",
+   "expert": "Machine joignable + port fermé : c'est le service, pas le réseau. On redémarre le conteneur."
+  }
+ }
+}

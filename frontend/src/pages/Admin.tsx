@@ -6,11 +6,12 @@ import Content from "../admin/Content";
 import Pilotage from "../admin/Pilotage";
 import QrPrint from "../admin/QrPrint";
 import Texts from "../admin/Texts";
+import Phase3 from "../admin/Phase3";
 import Tools from "../admin/Tools";
 import Visitors from "../admin/Visitors";
 import type { Meta, Run } from "../admin/shared";
 
-const TABS = [["pilotage", "Pilotage"], ["visiteurs", "Visiteurs"], ["qr", "QR codes"], ["contenu", "Contenu"], ["textes", "Textes"], ["outils", "Outils"]] as const;
+const TABS = [["pilotage", "Pilotage"], ["visiteurs", "Visiteurs"], ["panne", "Panne en prod"], ["qr", "QR codes"], ["contenu", "Contenu"], ["textes", "Textes"], ["outils", "Outils"]] as const;
 
 function Login({ onDone }: { onDone: () => void }) {
   const [pw, setPw] = useState("");
@@ -70,6 +71,7 @@ export default function Admin() {
       </nav>
       {tab === "pilotage" && <Pilotage {...props} />}
       {tab === "visiteurs" && <Visitors {...props} />}
+      {tab === "panne" && <Phase3 {...props} />}
       {tab === "qr" && <QrPrint {...props} />}
       {tab === "contenu" && <Content {...props} />}
       {tab === "textes" && <Texts run={run} />}

@@ -39,23 +39,47 @@ services:
     networks: [front, internal]
 
   chaos-agent:
-    # Étape 4 : stop/start des conteneurs de démo uniquement. Pour l'instant, simple squelette.
+    # Coupe / relance (stop/start) les 3 conteneurs de démo, rien d'autre. Voir chaos-agent/agent.py.
     build: ./chaos-agent
     restart: unless-stopped
     environment:
       CHAOS_TOKEN: ${CHAOS_TOKEN}
-    # Aucun port publié : joignable seulement depuis le réseau interne.
-    networks: [internal]
+      DOCKER_HOST_NAME: docker-proxy
+    # Aucun port publié : joignable seulement depuis le réseau interne (app) ; Docker via le proxy.
+    networks: [internal, dockerapi]
+    depends_on: [docker-proxy]
+
+  # Le socket Docker n'est monté QUE ici, en lecture seule, et filtré : conteneurs, start/stop uniquement.
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy:0.3.0
+    restart: unless-stopped
+    environment:
+      CONTAINERS: 1
+      POST: 1
+      ALLOW_START: 1
+      ALLOW_STOP: 1
+      ALLOW_RESTARTS: 0
+      EXEC: 0
+      IMAGES: 0
+      NETWORKS: 0
+      VOLUMES: 0
+      INFO: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks: [dockerapi]
 
   demo-web:
     image: nginx:1.27-alpine
-    restart: unless-stopped
+    container_name: cp-demo-web
+    restart: unless-stopped  # un arrêt volontaire (panne « boss ») n'est pas relancé par Docker : c'est le chaos-agent qui s'en charge
     volumes:
       - ./demo/web:/usr/share/nginx/html:ro
+      - ./demo/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks: [demo]
 
   demo-db:
     image: postgres:16-alpine
+    container_name: cp-demo-db
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: demo
@@ -64,6 +88,7 @@ services:
 
   demo-api:
     build: ./demo/api
+    container_name: cp-demo-api
     restart: unless-stopped
     networks: [demo]
 
@@ -73,6 +98,9 @@ networks:
   internal:
     internal: true
   demo: {}
+  # Entre le chaos-agent et le docker-socket-proxy uniquement.
+  dockerapi:
+    internal: true
 
 volumes:
   app-data: {}

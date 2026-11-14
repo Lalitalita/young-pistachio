@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseRich, pickText } from "./richtext";
+import { parseRich, pickText, plain } from "./richtext";
 
 describe("pickText", () => {
   const texts = { a: "simple", b: { curious: "doux", expert: "technique" } };
@@ -30,3 +30,12 @@ describe("parseRich", () => {
   it("ignore les marqueurs invalides", () => expect(parseRich("[[Pas Valide]]")).toEqual([{ type: "text", text: "[[Pas Valide]]" }]));
   it("chaîne vide", () => expect(parseRich("")).toEqual([]));
 });
+
+describe("plain", () => {
+  it("retire les marqueurs de glossaire", () => {
+    expect(plain("[[ping|Ping]] du serveur")).toBe("Ping du serveur");
+    expect(plain("un [[dns]] ici")).toBe("un dns ici");
+    expect(plain("rien")).toBe("rien");
+  });
+});
+

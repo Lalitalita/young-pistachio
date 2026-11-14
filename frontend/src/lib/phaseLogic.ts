@@ -10,6 +10,10 @@ export function pickRotation(ids: string[], nowMs: number, rotationS: number): s
 
 /** Que montre le grand écran ? Veille, phase fixée par l'admin, ou rotation. */
 export function screenView(s: PublicState, nowMs: number): ScreenView {
+  // Panne majeure en cours : elle prend la main sur l'écran, même en veille ou en rotation.
+  if (s.p3?.boss.status && s.p3.boss.status !== "idle" && s.phases.some((p) => p.id === "p3" && p.enabled)) {
+    return { kind: "phase", id: "p3" };
+  }
   if (s.attract) return { kind: "attract" };
   const enabled = s.phases.filter((p) => p.enabled).map((p) => p.id);
   if (!enabled.length) return { kind: "attract" };

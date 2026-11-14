@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Request, Response, WebSocket
 from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field, ValidationError
 
-from . import characters, content, db, phase1, qr
+from . import characters, content, db, phase1, phase3, qr
 from .config import settings
 from .hub import get_hub
 from .security import (COOKIE_VISITOR, VISITOR_MAX_AGE, client_ip, is_admin, limiter, make_token,
@@ -105,6 +105,85 @@ async def phase1_submit(body: Phase1Submit, request: Request):
     hub.touch()
     hub.request_broadcast(visitors=False)
     return res
+
+
+# ---------------- Phase 3 : incidents individuels + moment « boss » ----------------
+@router.get("/phase3/incident")
+async def p3_incident(request: Request):
+    return get_hub().p3.view(_current(request))
+
+
+class ClueBody(BaseModel):
+    index: int = Field(ge=0, le=9)
+
+
+@router.post("/phase3/clue")
+async def p3_clue(body: ClueBody, request: Request):
+    vid = _current(request)
+    _limit(request, "p3clue", 60)
+    get_hub().p3.clue(vid, body.index)
+    return get_hub().p3.view(vid)
+
+
+class DiagnoseBody(BaseModel):
+    choice: int = Field(ge=0, le=9)
+
+
+@router.post("/phase3/diagnose")
+async def p3_diagnose(body: DiagnoseBody, request: Request):
+    vid = _current(request)
+    _limit(request, "p3diag", 60)
+    hub = get_hub()
+    res = hub.p3.diagnose(vid, body.choice, hub.vis[vid]["pseudo"])
+    hub.touch()
+    if res.get("correct"):
+        hub.request_broadcast(visitors=False)
+    return {**res, "incident": hub.p3.view(vid)}
+
+
+@router.post("/phase3/next")
+async def p3_next(request: Request):
+    vid = _current(request)
+    _limit(request, "p3next", 30)
+    get_hub().p3.next(vid)
+    return get_hub().p3.view(vid)
+
+
+@router.post("/phase3/restart")
+async def p3_restart(request: Request):
+    vid = _current(request)
+    _limit(request, "p3next", 30)
+    get_hub().p3.restart_current(vid)
+    return get_hub().p3.view(vid)
+
+
+@router.post("/phase3/boss/request")
+async def p3_boss_request(request: Request):
+    vid = _current(request)
+    _limit(request, "p3boss", 10)
+    hub = get_hub()
+    if not hub.p3.has_solved(vid):
+        raise HTTPException(403, "Répare d'abord ton incident !")
+    res = await hub.boss.request(vid, hub.vis[vid]["pseudo"], hub.state.params["p3"])
+    hub.touch()
+    hub.request_broadcast(visitors=False)
+    return res
+
+
+class VoteBody(BaseModel):
+    choice: int = Field(ge=0, le=9)
+
+
+@router.post("/phase3/boss/vote")
+async def p3_boss_vote(body: VoteBody, request: Request):
+    vid = _current(request)
+    _limit(request, "p3vote", 20)
+    hub = get_hub()
+    ok = hub.boss.vote(vid, body.choice)
+    if ok:
+        hub.touch()
+        hub.request_broadcast(visitors=False)
+    return {"ok": ok}
 
 
 @router.get("/qr/{kind}.svg")

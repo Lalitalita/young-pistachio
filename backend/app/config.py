@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     wifi_password: str = ""
     wifi_security: str = "WPA"
     pi_ip: str = ""
+    chaos_url: str = "http://chaos-agent:9000"
+    chaos_token: str = ""
+    probes_enabled: bool = True
     data_dir: str = "/data"
     static_dir: str = "/app/static"
     content_dir: str = ""

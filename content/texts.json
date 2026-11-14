@@ -98,5 +98,58 @@
  "p1.screen_record_strong": "🏆 Record du jour : le plus solide",
  "p1.screen_record_progress": "📈 Meilleure progression",
  "p1.screen_pitfalls": "Top des pièges du jour",
- "p1.screen_feed": "En direct"
+ "p1.screen_feed": "En direct",
+ "p3.title": {
+  "curious": "Panne en prod !",
+  "expert": "Réponse à incident : diagnostic"
+ },
+ "p3.intro": {
+  "curious": "Tu es technicien dans une entreprise. Un incident vient de tomber : mène l'enquête avec les indices, puis trouve la cause.",
+  "expert": "Incident simulé. Collecte les symptômes ([[ping]], [[log|logs]], erreurs), puis identifie la cause racine. Chaque indice coûte des points."
+ },
+ "p3.clues_title": "🔍 Les indices",
+ "p3.clues_hint": {
+  "curious": "Touche un indice pour le découvrir. Attention : chaque indice coûte {cost} points !",
+  "expert": "Chaque indice consulté retire {cost} points au score final."
+ },
+ "p3.diag_title": {
+  "curious": "Quelle est la cause de la panne ?",
+  "expert": "Diagnostic : cause racine ?"
+ },
+ "p3.wrong": {
+  "curious": "Pas tout à fait… regarde mieux les indices ! (−{cost} points)",
+  "expert": "Hypothèse infirmée par les indices (−{cost} points)."
+ },
+ "p3.repair": "🛠️ Réparer : {fix}",
+ "p3.repairing": "Réparation en cours…",
+ "p3.fixed": {
+  "curious": "Réparé ! Le service est de nouveau en ligne. 🎉",
+  "expert": "Incident résolu, service rétabli."
+ },
+ "p3.score": "Score : {score}/100 · {sec} s",
+ "p3.lesson_title": "À retenir",
+ "p3.another": "🔁 Un autre incident",
+ "p3.boss_title": "🚨 Et si on cassait vraiment quelque chose ?",
+ "p3.boss_intro": {
+  "curious": "Déclenche une VRAIE panne sur l'entreprise de démo, regarde le grand écran et vote pour trouver la cause avec tout le monde !",
+  "expert": "Coupe un conteneur de démo en direct (via le chaos-agent). Le vote collectif porte sur la cause probable."
+ },
+ "p3.boss_btn": "🚨 Déclencher la grosse panne",
+ "p3.boss_queued": "Tu es dans la file d'attente (place {pos}). Ça démarre dès que possible !",
+ "p3.boss_cooldown": "Une panne vient d'avoir lieu : prochaine possible dans {sec} s.",
+ "p3.boss_busy": "Une panne est déjà en cours : regarde le grand écran 👀",
+ "p3.boss_disabled": "L'animateur n'a pas ouvert cette partie pour l'instant.",
+ "p3.boss_error": "Impossible de déclencher la panne pour l'instant. Réessaie dans un instant.",
+ "p3.vote_title": "🗳️ Vote : que s'est-il passé ?",
+ "p3.vote_left": "Il reste {sec} s",
+ "p3.voted": "Vote enregistré ! Regarde l'écran. ✅",
+ "p3.result": {
+  "curious": "{pct} % des visiteurs ont trouvé la bonne cause.",
+  "expert": "Cause correctement identifiée par {pct} % des votants ({correct}/{total})."
+ },
+ "p3.result_good": "Tu avais la bonne réponse 🎯",
+ "p3.result_bad": "Raté cette fois, mais tu as compris la méthode !",
+ "p3.continue": "Continuer",
+ "p3.screen_all_ok": "Tous les systèmes fonctionnent",
+ "p3.screen_incident": "Incident en cours"
 }

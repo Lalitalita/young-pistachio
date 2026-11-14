@@ -29,3 +29,8 @@ export function interpolate(text: string, vars?: Record<string, string | number>
   if (!vars) return text;
   return text.replace(/\{(\w+)\}/g, (_, k) => (k in vars ? String(vars[k]) : `{${k}}`));
 }
+
+/** Texte sans les marqueurs de glossaire (« [[dns|DNS]] » -> « DNS ») : pour l'intérieur d'un bouton, où un lien imbriqué serait invalide. */
+export function plain(text: string): string {
+  return text.replace(MARK, (_, key: string, label?: string) => label ?? key);
+}

@@ -74,7 +74,7 @@ export default function Screen() {
   const plugin = info ? PHASES[info.id] : null;
 
   return (
-    <main className="screen">
+    <main className={"screen" + (state.p3?.boss.status !== "idle" && view.kind === "phase" && view.id === "p3" ? " alert" : "")}>
       {view.kind === "attract" ? <Attract state={state} /> : (
         <div className="phase-wrap" key={view.id}>
           <Suspense fallback={null}>{plugin && <plugin.Screen info={info!} state={state} />}</Suspense>
