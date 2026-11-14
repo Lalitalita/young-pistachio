@@ -170,10 +170,10 @@ export default function Mobile({ info, state, me, send }: MobileProps) {
       )}
 
       {solved && repair === "done" && (
-        <div className="row">
+        <div className="stickybar page-bar">
           <button className="btn ghost" onClick={another}><T k="p3.another" /></button>
-          <button className="btn big" disabled={me.next_locked} onClick={() => send({ type: "advance" })}>
-            {me.next_locked ? t("ui.waiting_host", "En attente de l'animateur…") : t("p3.continue")}
+          <button className="btn" disabled={me.next_locked} onClick={() => send({ type: "advance" })}>
+            {me.next_locked ? t("ui.waiting_host", "En attente…") : t("p3.continue")}
           </button>
         </div>
       )}

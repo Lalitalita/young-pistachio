@@ -186,7 +186,8 @@ class Hub:
                        "opt_in": sum(1 for v in self.vis.values() if v["consent"])},
             "content_v": content.version(),
             "branding": branding, "qr": qr.info(st.screen), "demo": st.demo,
-            "p1": phase1.public_stats({v["id"] for v in self.vis.values() if v["hidden"]}),
+            "p1": phase1.public_stats({v["id"] for v in self.vis.values() if v["hidden"]},
+                                          bool(self.state.params["p1"].get("show_weak_passwords", True))),
             "p3": self.p3_public(),
             "recent": [{"pseudo": self.vis[i]["pseudo"]} for i in self.recent
                        if i in self.vis and not self.vis[i]["hidden"]],

@@ -46,26 +46,29 @@
   "expert": "Analyse de robustesse d'un mot de passe"
  },
  "p1.intro": {
-  "curious": "Voici un faux profil de réseau social. Crée un mot de passe pour le protéger : combien de temps tiendrait-il face à un pirate ?",
-  "expert": "Fiche fictive ci-dessous. Calcule un mot de passe dont l'entropie résiste à une attaque par [[brute-force|force brute]] informée (OSINT sur le profil)."
+  "curious": "Imagine : {prenom} a peur de se faire pirater son compte. Ton rôle : lui inventer un mot de passe solide. Ensuite, on simule un pirate qui essaie de le deviner en lisant son profil public.",
+  "expert": "Scénario : sécuriser le compte d'un profil fictif. Le pirate simulé fait de l'[[osint|OSINT]] sur la fiche publique, puis attaque (3 profils d'attaquant ci-dessous)."
  },
  "p1.warning_title": "⚠️ Important",
  "p1.warning_text": {
-  "curious": "N'utilise jamais un de tes vrais mots de passe ici ! Invente-en un nouveau, juste pour ce personnage. Il est envoyé à l'équipe de l'atelier et conservé 1h (pour pouvoir t'aider si tu reviens), puis supprimé automatiquement.",
-  "expert": "N'utilise jamais un mot de passe réel. Celui-ci est transmis au serveur de l'atelier (analyse + support en cas de retour) et purgé automatiquement après [[retention|une durée réglée par l'animateur]] (1h par défaut)."
+  "curious": "N'utilise jamais un de tes vrais mots de passe ici ! Invente-en un nouveau, juste pour ce personnage. Il est envoyé à l'équipe de l'atelier et conservé 1h (pour pouvoir t'aider si tu reviens), puis supprimé automatiquement. Les mots de passe les plus faibles peuvent s'afficher sur le grand écran (sans ton pseudo), pour rire et apprendre.",
+  "expert": "N'utilise jamais un mot de passe réel. Celui-ci est transmis au serveur de l'atelier (analyse + support) et purgé après [[retention|une durée réglée par l'animateur]] (1h par défaut). Les plus faibles peuvent figurer, sans pseudo, au palmarès du grand écran."
  },
- "p1.character_title": "Le personnage à protéger",
- "p1.password_label": "Ton mot de passe pour ce personnage",
+ "p1.character_title": {
+  "curious": "Le profil public de {prenom}",
+  "expert": "Fiche OSINT de {prenom}"
+ },
+ "p1.password_label": "Le mot de passe pour {prenom}",
  "p1.password_placeholder": "Invente un mot de passe…",
  "p1.target": {
   "curious": "Objectif : tenir au moins {years} ans !",
   "expert": "Cible : {years} ans avant cassage (hors ligne, hash rapide)"
  },
- "p1.time_online": "En ligne (limité)",
- "p1.time_offline": "Hors ligne (hash rapide, GPU)",
- "p1.time_gpu_farm": "Ferme de GPU",
+ "p1.time_online": "Sur le site (en ligne)",
+ "p1.time_offline": "Base volée (hors ligne)",
+ "p1.time_gpu_farm": "Ferme d'ordinateurs",
  "p1.submit": "Tester ce mot de passe",
- "p1.retry": "Essayer un autre mot de passe",
+ "p1.retry": "Un autre essai",
  "p1.continue": "Continuer",
  "p1.success": {
   "curious": "Bravo, ton mot de passe tient le choc ! 💪",
@@ -82,8 +85,8 @@
  },
  "p1.lesson_title": "Pour de vrais mots de passe",
  "p1.lesson_1": {
-  "curious": "Utilise une phrase de passe : 4 mots qui n'ont aucun rapport entre eux.",
-  "expert": "Privilégie une [[phrase-de-passe|phrase de passe]] de 4+ mots aléatoires : l'entropie vient de la longueur."
+  "curious": "Utilise une phrase de passe : 5 mots au hasard sans rapport avec toi (ex. « cheval pomme nuage table lampe »). 4 mots c'est déjà bien, 5 c'est mieux.",
+  "expert": "[[phrase-de-passe|Phrase de passe]] de mots tirés au hasard (7 776 mots) : 4 mots ≈ 2 jours en hash rapide, 5 mots ≈ 45 ans, 6 mots ≈ 300 000 ans."
  },
  "p1.lesson_2": {
   "curious": "Utilise un gestionnaire de mots de passe, un par site.",
@@ -151,5 +154,39 @@
  "p3.result_bad": "Raté cette fois, mais tu as compris la méthode !",
  "p3.continue": "Continuer",
  "p3.screen_all_ok": "Tous les systèmes fonctionnent",
- "p3.screen_incident": "Incident en cours"
+ "p3.screen_incident": "Incident en cours",
+ "p1.steps_title": "Comment ça marche ?",
+ "p1.step_1": "Lis le profil public de {prenom} : c'est aussi ce que voit le pirate.",
+ "p1.step_2": "Invente un mot de passe pour {prenom} (surtout pas un des tiens !).",
+ "p1.step_3": "On simule le pirate et on te dit en combien de temps il le trouve.",
+ "p1.character_help": {
+  "curious": "Des infos qu'on trouve sur n'importe quel réseau social. Le pirate les essaie en premier.",
+  "expert": "Données publiques typiques ; intégrées aux dictionnaires ciblés de l'attaquant."
+ },
+ "p1.times_title": "En combien de temps un pirate le trouve ?",
+ "p1.times_note": {
+  "curious": "« Hors ligne » décrit le pirate (il teste chez lui, sans personne pour le bloquer), pas ton téléphone. Ton mot de passe est bien envoyé à l'atelier : voir l'encadré ⚠️.",
+  "expert": "« Hors ligne » = modèle d'attaque (hash volé, aucun rate limiting), pas le lieu du calcul. L'analyse tourne sur le téléphone, mais le mot de passe est transmis au serveur de l'atelier (voir ⚠️)."
+ },
+ "p1.time_online_desc": {
+  "curious": "Le pirate essaie sur le site, qui le bloque après quelques essais (≈ 100 essais par heure).",
+  "expert": "Attaque en ligne limitée (verrouillage, rate limiting) : ~100 essais/h."
+ },
+ "p1.time_offline_desc": {
+  "curious": "Le pirate a volé la liste des mots de passe d'un site (brouillés) et teste chez lui, sans limite : ≈ 10 milliards d'essais par seconde.",
+  "expert": "Fuite de base, hash rapide (MD5/SHA-1), GPU : ~10¹⁰ essais/s, aucune limitation."
+ },
+ "p1.time_gpu_desc": {
+  "curious": "Pareil, avec un énorme parc de machines de calcul : ≈ 1 000 milliards d'essais par seconde.",
+  "expert": "Ferme de GPU : ~10¹² essais/s."
+ },
+ "p1.hint_fiche": "💡 Retire les infos du profil (prénom, date, ville…) : le pirate les essaie en premier.",
+ "p1.hint_add_word": "💡 Presque ! Ajoute encore un mot au hasard : ça rend la tâche 7 776 fois plus longue.",
+ "p1.hint_longer": "💡 Rallonge-le : le plus efficace, ce sont 5 mots au hasard sans rapport avec {prenom}.",
+ "p1.words_detected": {
+  "curious": "{n} mots détectés : bien, c'est la bonne méthode !",
+  "expert": "Phrase de passe de {n} mots (hypothèse : tirés au hasard dans 7 776 mots, soit {bits} bits)."
+ },
+ "p1.screen_weak": "💀 Palmarès des mots de passe les plus faibles",
+ "p1.screen_weak_empty": "Aucun mot de passe vraiment faible… pour l'instant !"
 }

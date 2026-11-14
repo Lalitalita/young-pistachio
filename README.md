@@ -3,7 +3,7 @@
 Atelier interactif pour la journée portes ouvertes de **Coda Avignon** (12 décembre 2026) :
 les visiteurs scannent un QR code, suivent un parcours cyber sur leur téléphone, et un grand écran affiche tout en direct.
 
-> **État : étape 3.** Phase 0 + **Phase 1 jouable** (« Ton mot de passe tient combien de temps ? »). Les phases 2 à 4 sont encore des gabarits (étapes suivantes).
+> **État : étape 4.** Phases 0, 1 et 3 jouables. Les phases 2 (Pi-hole) et 4 (escape game) sont encore des gabarits. Documentation complète du projet : [`CLAUDE.md`](CLAUDE.md).
 
 Tout se build dans Docker : **aucune installation de Node ou Python sur le PC**.
 
@@ -14,7 +14,7 @@ Linux avec `git`, `docker` et `docker compose` (v2).
 ## Installation
 
 ```bash
-git clone <URL-du-dépôt> cyber-parcours && cd cyber-parcours
+git clone https://github.com/Lalitalita/young-pistachio.git cyber-parcours && cd cyber-parcours
 cp .env.example .env
 ```
 
@@ -51,10 +51,20 @@ Ouvre ensuite :
 ## Phase 1 : « Ton mot de passe tient combien de temps ? »
 
 - Chaque visiteur reçoit une **fiche personnage fictive** (prénom, nom, date de naissance, ville, animal, club, copain/copine) et invente un mot de passe pour la protéger.
-- **⚠️ Choix assumé, différent du cahier des charges initial** : contrairement à l'idée de départ (« le mot de passe ne quitte jamais le téléphone »), le mot de passe **est envoyé au serveur et conservé** (par défaut 1h, réglable 5–240 min dans l'admin, phase 1 → Réglages → « Conservation »), pour permettre de retrouver le résultat d'un visiteur qui revient. **Le texte affiché au visiteur le dit explicitement** et lui demande de ne jamais utiliser un vrai mot de passe. Purge automatique (tâche de fond, toutes les 90 s) ; jamais affiché sur le grand écran ; jamais dans l'export CSV (qui reste anonyme).
+- **⚠️ Choix assumé, différent du cahier des charges initial** : contrairement à l'idée de départ (« le mot de passe ne quitte jamais le téléphone »), le mot de passe **est envoyé au serveur et conservé** (par défaut 1h, réglable 5–240 min dans l'admin, phase 1 → Réglages → « Conservation »), pour permettre de retrouver le résultat d'un visiteur qui revient. **Le texte affiché au visiteur le dit explicitement** et lui demande de ne jamais utiliser un vrai mot de passe. Purge automatique (tâche de fond, toutes les 90 s) ; jamais dans l'export CSV (qui reste anonyme). Seuls les mots de passe **les plus faibles** (score < 60) peuvent apparaître, **en clair mais sans pseudo**, dans le « palmarès » du grand écran ; réglable (phase 1 → « Palmarès… ») et annoncé aux visiteurs.
 - L'**analyse de robustesse tourne entièrement sur le téléphone** (algorithme [zxcvbn-ts](https://github.com/zxcvbn-ts/zxcvbn) + dictionnaires FR, chargés en tâche de fond pendant la phase 0, plus une couche « maison » : infos de la fiche, dates sous toutes leurs formes, années 1950→aujourd'hui, suites clavier AZERTY/QWERTY, leet speak, répétitions, schéma « Majuscule+mot+année+! », mots courants). Trois profils d'attaquant (en ligne limité, hors ligne hash rapide, ferme de GPU) donnent des ordres de grandeur pédagogiques.
 - Admin → **support visiteur** : `GET /api/admin/phase1/lookup?q=<pseudo>` retrouve les derniers résultats (dont le mot de passe) d'un pseudo, tant qu'ils ne sont pas purgés.
-- Grand écran : thermomètre géant avec la cible, records du jour, top des pièges, flux en direct (pseudo + score + pièges, jamais le mot de passe).
+- **Phrases de passe** : 3 mots ou plus (séparés par espace, tiret, point… ou en MajusculesCollées), sans piège, sont estimées à **7 776^n** essais (mots tirés au hasard dans une liste de 7 776 mots, standard Diceware). Hors ligne à 10¹⁰ essais/s : **4 mots ≈ 2 jours, 5 mots ≈ 45 ans, 6 mots ≈ 300 000 ans**. L'objectif par défaut (10 ans) demande donc 5 mots. Si la phrase contient une info de la fiche, le nombre de mots ne la sauve pas.
+- « **Hors ligne** » décrit l'attaquant (il a volé une base et teste chez lui, sans limite), pas l'endroit où le calcul tourne.
+- Grand écran : thermomètre géant avec la cible, records du jour, **palmarès des mots de passe les plus faibles**, top des pièges, flux en direct (pseudo + score).
+- Mobile : barre d'action collée en bas (bouton toujours visible, même clavier ouvert), Entrée valide, le clavier se referme au résultat.
+
+## Phase 3 : « Panne en prod ! »
+
+- 7 incidents (`content/incidents.json`), un par visiteur, avec indices payants et diagnostic parmi 3 ; la bonne réponse reste côté serveur.
+- Salle de contrôle sur le grand écran : sondes réelles sur nginx/API/Postgres/Pi-hole et **vrai ping du Raspberry Pi** (`PI_IP`, repli TCP).
+- **Moment « boss »** : panne réelle (un conteneur de démo est coupé par le `chaos-agent`), écran rouge, vote, redémarrage auto. Admin → onglet « Panne en prod » (déclencher, « Tout rétablir »). Réglage « Vraie panne » décochable pour répéter sans Docker.
+- Sécurité : le socket Docker n'est monté que dans `docker-proxy` (lecture seule, filtré) ; le `chaos-agent` n'accepte que stop/start de 3 conteneurs, avec jeton (`CHAOS_TOKEN`).
 
 ## Commandes
 

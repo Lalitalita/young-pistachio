@@ -8,8 +8,33 @@ const FICHE_FIELD: Record<string, PatternCode> = {
   prenom: "prenom", nom: "nom", ville: "ville", animal: "animal", club: "club", copain: "copain",
 };
 
+/**
+ * Le mot (déjà en minuscules côté `haystackLower`) est-il présent ? Les noms longs (≥ 5 lettres) comptent
+ * n'importe où ; les noms courts (« Eva », « Lea », « PSG ») seulement s'ils ne sont pas enfouis dans
+ * un autre mot : début/fin du mot de passe, ou collés à un chiffre, un tiret, un espace…
+ * (sinon « che-val » contiendrait « Eva » et une belle phrase de passe serait jugée piégée).
+ */
 function includesCI(haystackLower: string, needle: string): boolean {
-  return needle.length >= 3 && haystackLower.includes(needle.toLowerCase());
+  const n = needle.toLowerCase();
+  if (n.length < 3) return false;
+  if (n.length >= 5) return haystackLower.includes(n);
+  const isLetter = (c: string | undefined) => c !== undefined && /\p{L}/u.test(c);
+  for (let i = haystackLower.indexOf(n); i !== -1; i = haystackLower.indexOf(n, i + 1)) {
+    if (!isLetter(haystackLower[i - 1]) || !isLetter(haystackLower[i + n.length])) return true;
+  }
+  return false;
+}
+
+/** Mots entiers d'un mot de passe (coupé aux séparateurs, chiffres et majuscules), en minuscules sans accents. */
+function tokens(text: string): Set<string> {
+  const strip = (w: string) => w.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const out = new Set<string>();
+  for (const chunk of text.split(/[^\p{L}]+/u)) {
+    if (!chunk) continue;
+    out.add(strip(chunk));
+    for (const w of chunk.match(/\p{Lu}?\p{Ll}+|\p{Lu}+(?!\p{Ll})/gu) ?? []) out.add(strip(w));
+  }
+  return out;
 }
 
 /** Répétition d'un caractère (aaa) ou d'un petit bloc (abab, 123123). */
@@ -54,9 +79,11 @@ export function detectPatterns(password: string, character: Character, now: Date
   if (hasRepetition(password)) found.add("repetition");
   if (hasMajusculeMotAnneeSchema(password)) found.add("schema_maj_annee");
 
+  const rawTokens = tokens(password);
+  const leetTokens = tokens(normalized);
   for (const w of COMMON_WORDS) {
-    const rawHit = includesCI(lower, w);
-    const leetHit = !rawHit && includesCI(normalized, w);
+    const rawHit = rawTokens.has(w);
+    const leetHit = !rawHit && leetTokens.has(w);
     if (rawHit || leetHit) {
       found.add("mot_commun");
       leetOnly = leetOnly || leetHit;

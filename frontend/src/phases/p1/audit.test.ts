@@ -22,4 +22,33 @@ describe("auditPassword (intégration zxcvbn + couche maison)", () => {
     expect(r.length).toBe(0);
     expect(r.score).toBe(0);
   });
+  it("4 mots au hasard : ordre de grandeur cohérent (2 jours hors ligne), séparateurs sans effet", async () => {
+    const times = [];
+    for (const p of ["cheval pomme nuage table", "cheval-pomme-nuage-table", "ChevalPommeNuageTable"]) {
+      const r = await auditPassword(p, CHAR, 10);
+      expect(r.words).toBe(4);
+      expect(r.patterns).toEqual([]);
+      times.push(r.times.offline_fast);
+    }
+    for (const t of times) { expect(t).toBeGreaterThan(3600 * 24); expect(t).toBeLessThan(3600 * 24 * 10); }
+  });
+  it("5 mots au hasard atteignent un objectif de 10 ans, 4 mots non (conseil : ajouter un mot)", async () => {
+    const four = await auditPassword("cheval pomme nuage table", CHAR, 10);
+    const five = await auditPassword("cheval pomme nuage table lampe", CHAR, 10);
+    expect(four.hint).toBe("add_word");
+    expect(five.times.offline_fast).toBeGreaterThan(10 * 365.25 * 86400);
+    expect(five.hint).toBeNull();
+  });
+  it("une phrase avec le prénom du personnage n'est pas sauvée par le nombre de mots", async () => {
+    const r = await auditPassword("lea chat marseille vacances", CHAR, 10);
+    expect(r.words).toBe(0);
+    expect(r.hint).toBe("fiche");
+    expect(r.times.offline_fast).toBeLessThan(1);
+  });
+  it("4 mots sans rapport ne sont jamais piégés, même si un mot cache le prénom du copain", async () => {
+    const eva = { ...CHAR, copain: "Eva" };
+    const r = await auditPassword("cheval pomme nuage table", eva, 10);
+    expect(r.patterns).toEqual([]);
+    expect(r.words).toBe(4);
+  });
 });

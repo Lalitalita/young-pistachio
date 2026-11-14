@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PATTERN_LABELS } from "./explain";
+import { formatDuration } from "./format";
 import type { PatternCode } from "./types";
 import type { PublicState } from "../../lib/types";
 import type { ScreenProps } from "../types";
@@ -44,6 +45,17 @@ export default function Screen({ info, state }: ScreenProps) {
               <h3>📈 Meilleure progression</h3>
               <p className="record">{p1.best_progress.pseudo} <b>+{p1.best_progress.delta} pts</b></p>
             </>
+          )}
+        </div>
+        <div className="p1-col weak">
+          <h3>💀 Palmarès des mots de passe les plus faibles</h3>
+          {p1.weakest.length === 0 ? <p className="dim">Aucun mot de passe vraiment faible… pour l'instant !</p> : (
+            <ol className="weaklist">
+              {p1.weakest.map((w: { password: string; offline_fast: number; count: number }) => (
+                <li key={w.password}><code>{w.password}</code>
+                  <span>cassé en <b>{formatDuration(w.offline_fast)}</b>{w.count > 1 ? ` · ×${w.count}` : ""}</span></li>
+              ))}
+            </ol>
           )}
         </div>
         <div className="p1-col">

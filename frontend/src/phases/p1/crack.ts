@@ -7,10 +7,10 @@ export function clamp(v: number, lo: number, hi: number): number {
 /** Plafond (nombre d'essais) qu'un piège rend plausible, indépendamment de l'estimation de base. */
 const ABSOLUTE_CAPS: Partial<Record<PatternCode, number>> = {
   prenom: 50, nom: 50, ville: 50, animal: 50, club: 50, copain: 50,
-  date_naissance: 30, annee: 300, sequence_clavier: 200, repetition: 500, mot_commun: 2000,
+  date_naissance: 30, annee: 300, sequence_clavier: 200, repetition: 500,
 };
 /** Pièges qui réduisent l'estimation de base d'un facteur, plutôt qu'un plafond absolu. */
-const RELATIVE_FACTORS: Partial<Record<PatternCode, number>> = { schema_maj_annee: 200, leet: 10 };
+const RELATIVE_FACTORS: Partial<Record<PatternCode, number>> = { schema_maj_annee: 200, leet: 10, mot_commun: 20 };
 
 /**
  * Combine l'estimation de base (zxcvbn) avec les pièges « maison » détectés : chaque piège ne

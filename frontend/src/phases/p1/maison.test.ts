@@ -22,6 +22,14 @@ describe("detectPatterns : infos de la fiche", () => {
   it("animal", () => expect(detectPatterns("chatchat", CHAR, NOW)).toContain("animal"));
   it("club", () => expect(detectPatterns("psgforever", CHAR, NOW)).toContain("club"));
   it("copain/copine", () => expect(detectPatterns("hugoetlea", CHAR, NOW)).toContain("copain"));
+  it("un prénom court enfoui dans un autre mot n'est PAS une fuite d'info (che-VAL / EVA)", () => {
+    const eva = { ...CHAR, copain: "Eva" };
+    expect(detectPatterns("cheval pomme nuage table", eva, NOW)).toEqual([]);
+    expect(detectPatterns("cheval-pomme-nuage-table", eva, NOW)).toEqual([]);
+    expect(detectPatterns("eva1234", eva, NOW)).toContain("copain");
+    expect(detectPatterns("monamieEva", eva, NOW)).toContain("copain");
+    expect(detectPatterns("pomme eva nuage", eva, NOW)).toContain("copain");
+  });
   it("aucune fausse détection sur un mot de passe sans rapport", () => {
     const p = detectPatterns("Xq7#mK2!wZrT9", CHAR, NOW);
     expect(p).not.toContain("prenom"); expect(p).not.toContain("nom"); expect(p).not.toContain("ville");
@@ -52,6 +60,13 @@ describe("detectPatterns : leet speak", () => {
 
 describe("detectPatterns : mot courant et clavier", () => {
   it("mot courant générique (non lié à la fiche)", () => expect(detectPatterns("chocolat99", CHAR, NOW)).toContain("mot_commun"));
+  it("un mot courant au milieu d'un autre mot n'est PAS un mot courant", () => {
+    expect(detectPatterns("machinesvolantes", CHAR, NOW)).not.toContain("mot_commun"); // « ines » dans « machines »
+    expect(detectPatterns("silencetempete", CHAR, NOW)).not.toContain("mot_commun");   // « lens » dans « silence »
+  });
+  it("mots courants détectés entiers, y compris collés en majuscules", () => {
+    expect(detectPatterns("SoleilBleu", CHAR, NOW)).toContain("mot_commun");
+  });
   it("suite clavier", () => expect(detectPatterns("azerty99", CHAR, NOW)).toContain("sequence_clavier"));
   it("répétition", () => expect(detectPatterns("xx121212", CHAR, NOW)).toContain("repetition"));
   it("schéma classique", () => expect(detectPatterns("Avignon2024!", CHAR, NOW)).toContain("ville"));

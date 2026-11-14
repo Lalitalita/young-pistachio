@@ -67,7 +67,9 @@ def test_submit_never_exposed_on_public_state(client):
     client.post("/api/session")
     submit(client, password="SECRET-TEST-1234")
     st = client.get("/api/state").json()
-    assert "SECRET-TEST-1234" not in str(st)
+    # le mot de passe ne peut sortir que par le palmarès des plus faibles (score < 60), jamais ailleurs
+    assert "SECRET-TEST-1234" not in str({k: v for k, v in st["p1"].items() if k != "weakest"})
+    assert "SECRET-TEST-1234" not in str({k: v for k, v in st.items() if k != "p1"})
     assert st["p1"]["count"] == 1
     assert st["p1"]["strongest"]["score"] == 50
     assert st["p1"]["strongest"]["offline_fast"] == 1
@@ -127,3 +129,15 @@ def test_retention_configurable_and_reset_clears_characters(admin, client):
     admin.post("/api/admin/reset", json={"confirm": "RESET"})
     rows = db.run("SELECT key FROM kv WHERE key LIKE 'char:%'", fetch="all")
     assert rows == []
+
+
+def test_weakest_ranking_is_anonymous_dedup_and_toggleable(admin, client):
+    client.post("/api/session")
+    for pw, score in (("azerty", 3), ("AZERTY", 3), ("lea1998", 10), ("Xq7#mK2!wZrT9", 95)):
+        assert submit(client, password=pw, score=score, times={"online": 1, "offline_fast": 0.001, "gpu_farm": 1}).status_code == 200
+    w = client.get("/api/state").json()["p1"]["weakest"]
+    assert [e["password"].lower() for e in w] == ["azerty", "lea1998"]      # le fort est exclu, les doublons fusionnés
+    assert w[0]["count"] == 2 and "pseudo" not in str(w) and "visitor" not in str(w)
+    admin.put("/api/admin/phases/p1/params", json={"values": {"show_weak_passwords": False}})
+    assert client.get("/api/state").json()["p1"]["weakest"] == []
+    assert "Xq7#mK2" not in str(client.get("/api/state").json())

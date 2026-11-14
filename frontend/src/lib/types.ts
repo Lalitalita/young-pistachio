@@ -46,6 +46,7 @@ export interface PublicState {
     count: number;
     strongest: { pseudo: string; score: number; offline_fast: number } | null;
     best_progress: { pseudo: string; delta: number } | null;
+    weakest: { password: string; score: number; offline_fast: number; count: number }[];
     top_pitfalls: { code: string; pct: number }[];
     feed: { pseudo: string; score: number; length: number; offline_fast: number }[];
   };

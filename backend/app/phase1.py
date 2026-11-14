@@ -46,8 +46,25 @@ def _rows(limit: int = 300) -> list[dict]:
              "created_at": r["created_at"]} for r in rows]
 
 
-def public_stats(hidden_visitor_ids: set[str]) -> dict:
-    """Agrégats anonymes pour le grand écran : jamais le mot de passe lui-même."""
+WEAK_MAX_SCORE = 60  # au-delà, ce n'est plus un mot de passe « faible »
+
+
+def weakest(rows: list[dict], limit: int = 5) -> list[dict]:
+    """Palmarès des mots de passe les plus faibles : en clair mais SANS pseudo, dédoublonnés."""
+    seen: dict[str, dict] = {}
+    for r in rows:
+        pw = (r.get("password") or "").strip()
+        if not pw or r["value"] >= WEAK_MAX_SCORE:
+            continue
+        key = pw.lower()
+        e = seen.setdefault(key, {"password": pw[:32], "score": r["value"], "offline_fast": r["times"]["offline_fast"], "count": 0})
+        e["count"] += 1
+    top = sorted(seen.values(), key=lambda e: (e["score"], len(e["password"])))[:limit]
+    return [{**e, "score": round(e["score"])} for e in top]
+
+
+def public_stats(hidden_visitor_ids: set[str], show_weak: bool = False) -> dict:
+    """Agrégats pour le grand écran. Les mots de passe ne sortent que dans `weakest` (réglable, sans pseudo)."""
     rows = [r for r in _rows() if r["visitor_id"] not in hidden_visitor_ids]
     strongest = max(rows, key=lambda r: r["value"], default=None)
     by_visitor: dict[str, list[dict]] = {}
@@ -73,6 +90,7 @@ def public_stats(hidden_visitor_ids: set[str]) -> dict:
                        "offline_fast": strongest["times"]["offline_fast"]} if strongest else None),
         "best_progress": ({"pseudo": best_progress["pseudo"], "delta": round(best_delta)}
                           if best_progress else None),
+        "weakest": weakest(rows) if show_weak else [],
         "top_pitfalls": [{"code": c, "pct": round(100 * n / total)} for c, n in top],
         "feed": [{"pseudo": r["pseudo"], "score": r["value"], "length": r["length"],
                   "offline_fast": r["times"]["offline_fast"]} for r in rows[:8]],

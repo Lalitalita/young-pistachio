@@ -8,6 +8,7 @@ redonner tout le contexte à Claude si besoin.
 ## Commandes pour reprendre
 
 ```bash
+# première fois : git clone https://github.com/Lalitalita/young-pistachio.git cyber-parcours
 cd ~/github/cyber-parcours   # ou où tu l'as cloné
 git pull
 docker compose up -d --build
@@ -81,8 +82,8 @@ docker compose up -d --build
      (répétition sans Docker).
 
 ### État des tests (au dernier commit)
-- Backend : 82 tests pytest (+ 6 chaos-agent) (`cd backend && pytest -q`, ou `./cyber.sh test`).
-- Front : 98 tests Vitest (`cd frontend && npm test`).
+- Backend : 83 tests pytest (+ 6 chaos-agent) (`cd backend && pytest -q`, ou `./cyber.sh test`).
+- Front : 118 tests Vitest (`cd frontend && npm test`).
 - Build front vérifié, CI GitHub Actions en place (pas pu être exécutée dans cet environnement
   cloud, faute de démon Docker — à vérifier chez toi que les 3 jobs passent bien).
 
